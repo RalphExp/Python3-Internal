@@ -1,4 +1,4 @@
-# Chapter1 Parser (Python3.9.16)
+# Python3 Parser
 
 ### play with pgen
 
