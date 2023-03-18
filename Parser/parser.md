@@ -1,12 +1,14 @@
 # Python3 Parser
 
-### play with pgen
+## The pgen module
 
+### startup
 Python3 use a tool named pgen to generate its Grammar Automaton, let's do this ourselves, enter the Parser directory, and type the following command, the correspondence files will be generated.
 
-```python3 -m pgen ../Grammar/Grammar ../Grammar/Tokens graminit.h graminit.c --graph graph ```
+```python3 -m pgen ../Grammar/Grammar ../Grammar/Tokens graminit.h graminit.c --verbose --graph graph ```
 
-To see how it works, we need to use a debugger (pdb), change the \_\_main\_\_.py file to use pdb
+### how to debug pgen
+To see how it works, we need to use a debugger (pdb), change the \_\_main\_\_.py file to use pdb, you can also modify any python file, adding pdb.set_trace(), so pdb will set the break points and will stop there when it hits the break point.
 
 ```python
  42 if __name__ == "__main__":
@@ -46,4 +48,5 @@ The tokens and opmap look like this:
 (Pdb) p self.opmap
 {'(': 'LPAR', ')': 'RPAR', '[': 'LSQB', ']': 'RSQB', ':': 'COLON', ',': 'COMMA', ';': 'SEMI', '+': 'PLUS', '-': 'MINUS', '*': 'STAR', '/': 'SLASH', '|': 'VBAR', '&': 'AMPER', '<': 'LESS', '>': 'GREATER', '=': 'EQUAL', '.': 'DOT', '%': 'PERCENT', '{': 'LBRACE', '}': 'RBRACE', '==': 'EQEQUAL', '!=': 'NOTEQUAL', '<=': 'LESSEQUAL', '>=': 'GREATEREQUAL', '~': 'TILDE', '^': 'CIRCUMFLEX', '<<': 'LEFTSHIFT', '>>': 'RIGHTSHIFT', '**': 'DOUBLESTAR', '+=': 'PLUSEQUAL', '-=': 'MINEQUAL', '*=': 'STAREQUAL', '/=': 'SLASHEQUAL', '%=': 'PERCENTEQUAL', '&=': 'AMPEREQUAL', '|=': 'VBAREQUAL', '^=': 'CIRCUMFLEXEQUAL', '<<=': 'LEFTSHIFTEQUAL', '>>=': 'RIGHTSHIFTEQUAL', '**=': 'DOUBLESTAREQUAL', '//': 'DOUBLESLASH', '//=': 'DOUBLESLASHEQUAL', '@': 'AT', '@=': 'ATEQUAL', '->': 'RARROW', '...': 'ELLIPSIS', ':=': 'COLONEQUAL', '<>': 'NOTEQUAL'}
 ```
+then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file, if --verbose is set, ParserGenerator will dump the NFA to the console.
 
