@@ -22,17 +22,20 @@ def putToken(tok):
     global cached_token
     assert (cached_token is None)
     cached_token = tok
+    
+
+def skipBlank(gen):
+    tok = getToken(gen)
+    while tok.type in (token.NEWLINE, token.INDENT):
+        tok = getToken(gen)
+    return tok
 
 
 def factor(gen):
-    tok = getToken(gen)
-    while tok.type not in (token.NEWLINE, token.INDENT):
-        break
+    tok = skipBlank(gen)
 
     if tok.exact_type == token.MINUS:
-        nextTok = getToken(gen)
-        while nextTok.type not in (token.NEWLINE, token.INDENT):
-            break
+        nextTok = skipBlank(gen)
 
         if nextTok.exact_type != token.NUMBER:
             raise Exception('number not found after token -')
@@ -44,9 +47,7 @@ def factor(gen):
         
     if tok.exact_type == token.LPAR:
         t = expr(gen)
-        tok = getToken(gen)
-        while tok.type not in (token.NEWLINE, token.INDENT):
-            break
+        tok = skipBlank(gen)
         
         if tok.exact_type != token.RPAR:
             raise Exception('unexpected token: ' + str(tok))
@@ -60,10 +61,7 @@ def term(gen):
     e = factor(gen)
 
     while True:
-        tok = getToken(gen)
-        if tok.type in (token.NEWLINE, token.INDENT):
-            continue
-
+        tok = skipBlank(gen)
         if tok.exact_type == token.STAR:
             e *= factor(gen)
         elif tok.exact_type == token.SLASH:
@@ -74,19 +72,14 @@ def term(gen):
         else:
             putToken(tok)
             break
-
     return e
 
 
 def expr(gen):
-    # import pdb
-    # pdb.set_trace()
     t = term(gen)
     
     while True:
-        tok = getToken(gen)
-        if tok.type in (token.NEWLINE, token.INDENT):
-            continue
+        tok = skipBlank(gen)
         if tok.exact_type == token.PLUS:
             t += term(gen)
         elif tok.exact_type == token.MINUS:
