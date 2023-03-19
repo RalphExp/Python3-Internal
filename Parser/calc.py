@@ -101,7 +101,7 @@ def calculate(gen):
     e = expr(gen)
     tok = getToken(gen)
     if tok.type != token.ENDMARKER:
-        raise Exception('unrecognized token: ' + str(tok))
+        raise Exception('unexpected token: ' + str(tok))
     return e
 
 
