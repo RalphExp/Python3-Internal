@@ -29,31 +29,32 @@ def factor(gen):
     while tok.type not in (token.NEWLINE, token.INDENT):
         break
 
-    if tok.type == token.OP and tok.string == '-':
+    if tok.exact_type == token.MINUS:
         nextTok = getToken(gen)
         while nextTok.type not in (token.NEWLINE, token.INDENT):
             break
 
-        if nextTok.type != token.NUMBER:
+        if nextTok.exact_type != token.NUMBER:
             raise Exception('number not found after token -')
             
         return -1 * float(nextTok.string)
 
-    if tok.type == token.NUMBER:
+    if tok.exact_type == token.NUMBER:
         return float(tok.string)
         
-    if tok.type == token.OP and tok.string == '(':
+    if tok.exact_type == token.LPAR:
         t = expr(gen)
         tok = getToken(gen)
         while tok.type not in (token.NEWLINE, token.INDENT):
             break
         
-        if tok.type != token.OP or tok.string != ')':
-            raise Exception('unmatched parenthesis')
+        if tok.exact_type != token.RPAR:
+            raise Exception('unexpected token: ' + str(tok))
         return t
 
     putToken(tok)
     return None    
+
 
 def term(gen):
     e = factor(gen)
@@ -63,9 +64,9 @@ def term(gen):
         if tok.type in (token.NEWLINE, token.INDENT):
             continue
 
-        if tok.type == token.OP and tok.string == '*':
+        if tok.exact_type == token.STAR:
             e *= factor(gen)
-        elif tok.type == token.OP and tok.string == '/':
+        elif tok.exact_type == token.SLASH:
             t = factor(gen)
             if t == 0:
                 raise Exception('divide by 0')
@@ -78,15 +79,17 @@ def term(gen):
 
 
 def expr(gen):
+    # import pdb
+    # pdb.set_trace()
     t = term(gen)
     
     while True:
         tok = getToken(gen)
         if tok.type in (token.NEWLINE, token.INDENT):
             continue
-        if tok.type == token.OP and tok.string == '+':
+        if tok.exact_type == token.PLUS:
             t += term(gen)
-        elif tok.type == token.OP and tok.string == '-':
+        elif tok.exact_type == token.MINUS:
             t -= term(gen)
         else:
             putToken(tok)
@@ -106,6 +109,10 @@ if __name__ == '__main__':
     while True:
         line = io.StringIO(input('input a math expression: '))
         gen = tokenize.generate_tokens(line.readline)
-        e = calculate(gen)
-        if e is not None:
-            print(e)
+
+        try:
+            value = calculate(gen)
+            if value is not None:
+                print(value)
+        except Exception as e:
+            print(str(e))
