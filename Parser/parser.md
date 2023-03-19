@@ -50,7 +50,7 @@ The tokens and opmap look like this:
 ```
 
 then Python use a library named tokenizer.py to generate the Tokens. The token name will match the name of self.tokens list.
-Before moving on, we can make a simple calculator using the tokenizer.py as an exercise. See calc.py
+Before moving on, we can make a simple calculator using the tokenizer.py. See calc.py
 
 
 
