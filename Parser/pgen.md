@@ -17,7 +17,7 @@ To see how it works, we need to use a debugger (pdb), change the \_\_main\_\_.py
  45     main()
  ```
 
-pgen.py use a Class ParserGenerator to parse the Grammar file, generate the (token_name, token_num pairs) and (token_operator, token_name pairs)
+pgen.py use a Class ParserGenerator **pgen.py** to parse the Grammar file, generate the (token_name, token_num pairs) and (token_operator, token_name pairs)
 
 ```python
 class ParserGenerator(object):
@@ -54,4 +54,6 @@ Before moving on, we can make a simple calculator using the tokenizer.py. See ca
 
 
 
-then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file.
+then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file. **metaparser.py**
+
+
