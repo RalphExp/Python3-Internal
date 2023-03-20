@@ -85,30 +85,91 @@ and every rule may contains several meta symbol, just like the regular expressio
 - ```+``` means the content at least show up once
 
 To parse these rules, pgen use a class **GrammarParser** (see *metaparser.py*) to do the job:
-alternative has the lowest priority, so the method parse_rhs handles the alternative at the outmost level. The variable a means this is a **start state** and varible z means this is an **end state** of the automaton fragment, if the ```|``` symbol is found, it create a new state aa which will link to all the a variables, it will also create a new state zz, which is linked by all the z variables. 
+alternative has the lowest priority, so the method parse_rhs handles the alternative at the outmost level. The variable a means this is a **start state** and varible z means this is an **end state** of the automaton fragment, if the ```|``` symbol is found, it create a new state aa which will link to all the a variables, it will also create a new state zz, which is linked by all the z variables. The　_parse_items method acts as concatenation and the _parse_item handles the STAR and PLUS, finally the _parse_atom method handles the NAME and STRING.
 
 
 ```python
- 43     def _parse_rhs(self):
- 44         # rhs: items ('|' items)*
- 45         a, z = self._parse_items()
- 46         if self.value != "|":
- 47             return a, z
- 48         else:
- 49             aa = NFAState(self._current_rule_name)
- 50             zz = NFAState(self._current_rule_name)
- 51             while True:
- 52                 # Allow to transit directly to the previous state and connect the end of the
- 53                 # previous state to the end of the current one, effectively allowing to skip
- 54                 # the current state.
- 55                 aa.add_arc(a)
- 56                 z.add_arc(zz)
- 57                 if self.value != "|":
- 58                     break
- 59 
- 60                 self._gettoken()
- 61                 a, z = self._parse_items()
- 62             return aa, zz
-```
+def _parse_rhs(self):
+   # rhs: items ('|' items)*
+   a, z = self._parse_items()
+   if self.value != "|":
+       return a, z
+   else:
+       aa = NFAState(self._current_rule_name)
+       zz = NFAState(self._current_rule_name)
+       while True:
+           # Allow to transit directly to the previous state and connect the end of the
+           # previous state to the end of the current one, effectively allowing to skip
+           # the current state.
+           aa.add_arc(a)
+           z.add_arc(zz)
+           if self.value != "|":
+               break
+
+           self._gettoken()
+           a, z = self._parse_items()
+       return aa, zz
+
+def _parse_items(self):
+     # items: item+
+     a, b = self._parse_item()
+     while self.type in (tokenize.NAME, tokenize.STRING) or self.value in ("(", "["):
+         c, d = self._parse_item()
+         # Allow a transition between the end of the previous state
+         # and the beginning of the new one, connecting all the items
+         # together. In this way we can only reach the end if we visit
+         # all the items.
+         b.add_arc(c)
+         b = d
+     return a, b
+
+def _parse_item(self):
+    # item: '[' rhs ']' | atom ['+' | '*']
+    if self.value == "[":
+        self._gettoken()
+        a, z = self._parse_rhs()
+        self._expect(tokenize.OP, "]")
+        # Make a transition from the beginning to the end so it is possible to
+        # advance for free to the next state of this item # without consuming
+        # anything from the rhs.
+        a.add_arc(z)
+        return a, z
+    else:
+        a, z = self._parse_atom()
+        value = self.value
+        if value not in ("+", "*"):
+            return a, z
+        self._gettoken()
+        z.add_arc(a)
+        if value == "+":
+            # Create a cycle to the beginning so we go back to the old state in this
+            # item and repeat.
+            return a, z
+        else:
+            # The end state is the same as the beginning, so we can cycle arbitrarily
+            # and end in the beginning if necessary.
+            return a, a
+
+def _parse_atom(self):
+    # atom: '(' rhs ')' | NAME | STRING
+    if self.value == "(":
+        self._gettoken()
+        a, z = self._parse_rhs()
+        self._expect(tokenize.OP, ")")
+        return a, z
+    elif self.type in (tokenize.NAME, tokenize.STRING):
+        a = NFAState(self._current_rule_name)
+        z = NFAState(self._current_rule_name)
+        # We can transit to the next state only if we consume the value.
+        a.add_arc(z, self.value)
+        self._gettoken()
+        return a, z
+    else:
+        self._raise_error(
+            "expected (...) or NAME or STRING, got {} ({})",
+            self._translation_table.get(self.type, self.type),
+            self.value,
+        )
+   ```
 
 
