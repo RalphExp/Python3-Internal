@@ -28,30 +28,27 @@ def skipBlank(gen):
     tok = getToken(gen)
     while tok.type in (token.NEWLINE, token.INDENT):
         tok = getToken(gen)
+
     return tok
 
 
 def factor(gen):
     tok = skipBlank(gen)
 
+    sign = 1
     if tok.exact_type == token.MINUS:
-        nextTok = skipBlank(gen)
-
-        if nextTok.exact_type != token.NUMBER:
-            raise Exception('number not found after token -')
-            
-        return -1 * float(nextTok.string)
+        sign = -1
+        tok = skipBlank(gen)
 
     if tok.exact_type == token.NUMBER:
-        return float(tok.string)
+        return sign * float(tok.string)
         
     if tok.exact_type == token.LPAR:
-        t = expr(gen)
+        e = expr(gen)
         tok = skipBlank(gen)
-        
         if tok.exact_type != token.RPAR:
             raise Exception('unexpected token: ' + str(tok))
-        return t
+        return sign * e
 
     putToken(tok)
     return None    
@@ -103,6 +100,7 @@ if __name__ == '__main__':
         line = io.StringIO(input('input a math expression: '))
         gen = tokenize.generate_tokens(line.readline)
 
+        cached_token = None
         try:
             value = calculate(gen)
             if value is not None:

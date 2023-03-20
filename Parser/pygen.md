@@ -54,5 +54,4 @@ Before moving on, we can make a simple calculator using the tokenizer.py. See ca
 
 
 
-then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file, if --verbose is set, ParserGenerator will dump the NFA to the console.
-
+then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file.
