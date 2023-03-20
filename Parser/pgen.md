@@ -56,4 +56,59 @@ Before moving on, we can make a simple calculator using the tokenizer.py. See ca
 
 then ParserGenerator will create DFA for the parser, but before creating the DFA, ParserGenerator will create NFA using the syntax in the grammar file. **metaparser.py**
 
+### Grammar File
+This is a snippet of the grammar file:
+```
+single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
+file_input: (NEWLINE | stmt)* ENDMARKER
+eval_input: testlist NEWLINE* ENDMARKER
+
+decorator: '@' namedexpr_test NEWLINE
+decorators: decorator+
+decorated: decorators (classdef | funcdef | async_funcdef)
+
+async_funcdef: ASYNC funcdef
+funcdef: 'def' NAME parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite
+
+parameters: '(' [typedargslist] ')'
+```
+
+every rule has the form ```NAME ':' rhs NEWLINE```
+
+- ```NAME``` is the rule name, such as single_input, file_input, ... etc.
+- ```rhs``` is "right hand side", which is composed of a series of TERMINAL and NON-TERMINAL symbol 
+
+and every rule may contains several meta symbol, just like the regular expressions:
+- ```|``` means alternative
+- ```[``` and ```]``` means optional
+- ```*``` means the content may repeat any times
+- ```+``` means the content at least show up once
+
+To parse these rules, pgen use a class GrammarParser **metaparser.py** to do the job:
+alternative has the lowest priority, so the method parse_rhs handles the alternative at the outmost level. The variable a means this is a **start state** and varible z means this is an **end state** of the automaton fragment, if the ```|``` symbol is found, it create a new state aa which will link to all the a variables, it will also create a new state zz, which is linked by all the z variables. 
+
+
+```python
+ 43     def _parse_rhs(self):
+ 44         # rhs: items ('|' items)*
+ 45         a, z = self._parse_items()
+ 46         if self.value != "|":
+ 47             return a, z
+ 48         else:
+ 49             aa = NFAState(self._current_rule_name)
+ 50             zz = NFAState(self._current_rule_name)
+ 51             while True:
+ 52                 # Allow to transit directly to the previous state and connect the end of the
+ 53                 # previous state to the end of the current one, effectively allowing to skip
+ 54                 # the current state.
+ 55                 aa.add_arc(a)
+ 56                 z.add_arc(zz)
+ 57                 if self.value != "|":
+ 58                     break
+ 59 
+ 60                 self._gettoken()
+ 61                 a, z = self._parse_items()
+ 62             return aa, zz
+```
+
 
