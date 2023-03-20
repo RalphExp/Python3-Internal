@@ -84,7 +84,7 @@ and every rule may contains several meta symbol, just like the regular expressio
 - ```*``` means the content may repeat any times
 - ```+``` means the content at least show up once
 
-To parse these rules, pgen use a class GrammarParser **metaparser.py** to do the job:
+To parse these rules, pgen use a class **GrammarParser** (see *metaparser.py*) to do the job:
 alternative has the lowest priority, so the method parse_rhs handles the alternative at the outmost level. The variable a means this is a **start state** and varible z means this is an **end state** of the automaton fragment, if the ```|``` symbol is found, it create a new state aa which will link to all the a variables, it will also create a new state zz, which is linked by all the z variables. 
 
 
