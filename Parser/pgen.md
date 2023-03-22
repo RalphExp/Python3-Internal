@@ -140,8 +140,11 @@ Now come back to the method create_dfas, because the --verbose parameter, line 1
 171         return rule_to_dfas, start_nonterminal
 ```
 
-for the rule ```single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE```
-the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE)
+For the rule ```single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE```
+the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE). The rest of the rules are handled similarily, I saved them in the **automaton.txt**
+
+
+**NFA of single_input**
 ```
   State 0 
     -> 1
