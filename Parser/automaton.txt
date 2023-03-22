@@ -1,0 +1,5600 @@
+Dump of NFA for single_input
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+  State 1 
+    NEWLINE -> 4
+  State 2 
+    simple_stmt -> 5
+  State 3 
+    compound_stmt -> 6
+  State 4 
+    -> 7
+  State 5 
+    -> 7
+  State 6 
+    -> 8
+  State 7 (final)
+  State 8 
+    NEWLINE -> 9
+  State 9 
+    -> 7
+Dump of DFA for single_input
+  State 0 
+    NEWLINE -> 1
+    compound_stmt -> 2
+    simple_stmt -> 1
+  State 1 (final)
+  State 2 
+    NEWLINE -> 1
+  State 3 (final)
+  State 4 (final)
+Dump of NFA for file_input
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+  State 1 
+    NEWLINE -> 4
+  State 2 
+    stmt -> 5
+  State 3 
+    ENDMARKER -> 6
+  State 4 
+    -> 7
+  State 5 
+    -> 7
+  State 6 (final)
+  State 7 
+    -> 0
+Dump of DFA for file_input
+  State 0 
+    ENDMARKER -> 1
+    NEWLINE -> 0
+    stmt -> 0
+  State 1 (final)
+  State 2 
+    ENDMARKER -> 1
+    NEWLINE -> 0
+    stmt -> 0
+  State 3 
+    ENDMARKER -> 1
+    NEWLINE -> 0
+    stmt -> 0
+Dump of NFA for eval_input
+  State 0 
+    testlist -> 1
+  State 1 
+    -> 2
+  State 2 
+    NEWLINE -> 3
+    -> 4
+  State 3 
+    -> 2
+  State 4 
+    ENDMARKER -> 5
+  State 5 (final)
+Dump of DFA for eval_input
+  State 0 
+    testlist -> 1
+  State 1 
+    ENDMARKER -> 2
+    NEWLINE -> 1
+  State 2 (final)
+  State 3 
+    ENDMARKER -> 2
+    NEWLINE -> 1
+Dump of NFA for decorator
+  State 0 
+    '@' -> 1
+  State 1 
+    -> 2
+  State 2 
+    namedexpr_test -> 3
+  State 3 
+    -> 4
+  State 4 
+    NEWLINE -> 5
+  State 5 (final)
+Dump of DFA for decorator
+  State 0 
+    '@' -> 1
+  State 1 
+    namedexpr_test -> 2
+  State 2 
+    NEWLINE -> 3
+  State 3 (final)
+Dump of NFA for decorators
+  State 0 
+    decorator -> 1
+  State 1 (final)
+    -> 0
+Dump of DFA for decorators
+  State 0 
+    decorator -> 1
+  State 1 (final)
+    decorator -> 1
+Dump of NFA for decorated
+  State 0 
+    decorators -> 1
+  State 1 
+    -> 2
+  State 2 
+    -> 3
+    -> 4
+    -> 5
+  State 3 
+    classdef -> 6
+  State 4 
+    funcdef -> 7
+  State 5 
+    async_funcdef -> 8
+  State 6 
+    -> 9
+  State 7 
+    -> 9
+  State 8 
+    -> 9
+  State 9 (final)
+Dump of DFA for decorated
+  State 0 
+    decorators -> 1
+  State 1 
+    async_funcdef -> 2
+    classdef -> 2
+    funcdef -> 2
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+Dump of NFA for async_funcdef
+  State 0 
+    ASYNC -> 1
+  State 1 
+    -> 2
+  State 2 
+    funcdef -> 3
+  State 3 (final)
+Dump of DFA for async_funcdef
+  State 0 
+    ASYNC -> 1
+  State 1 
+    funcdef -> 2
+  State 2 (final)
+Dump of NFA for funcdef
+  State 0 
+    'def' -> 1
+  State 1 
+    -> 2
+  State 2 
+    NAME -> 3
+  State 3 
+    -> 4
+  State 4 
+    parameters -> 5
+  State 5 
+    -> 6
+  State 6 
+    '->' -> 7
+    -> 8
+  State 7 
+    -> 9
+  State 8 
+    -> 10
+  State 9 
+    test -> 8
+  State 10 
+    ':' -> 11
+  State 11 
+    -> 12
+  State 12 
+    TYPE_COMMENT -> 13
+    -> 13
+  State 13 
+    -> 14
+  State 14 
+    func_body_suite -> 15
+  State 15 (final)
+Dump of DFA for funcdef
+  State 0 
+    'def' -> 1
+  State 1 
+    NAME -> 2
+  State 2 
+    parameters -> 3
+  State 3 
+    '->' -> 4
+    ':' -> 5
+  State 4 
+    test -> 6
+  State 5 
+    TYPE_COMMENT -> 7
+    func_body_suite -> 8
+  State 6 
+    ':' -> 5
+  State 7 
+    func_body_suite -> 8
+  State 8 (final)
+Dump of NFA for parameters
+  State 0 
+    '(' -> 1
+  State 1 
+    -> 2
+  State 2 
+    typedargslist -> 3
+    -> 3
+  State 3 
+    -> 4
+  State 4 
+    ')' -> 5
+  State 5 (final)
+Dump of DFA for parameters
+  State 0 
+    '(' -> 1
+  State 1 
+    ')' -> 2
+    typedargslist -> 3
+  State 2 (final)
+  State 3 
+    ')' -> 2
+Dump of NFA for typedargslist
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    tfpdef -> 3
+  State 2 
+    -> 4
+    -> 5
+    -> 6
+  State 3 
+    -> 7
+  State 4 
+    tfpdef -> 8
+  State 5 
+    '*' -> 9
+  State 6 
+    '**' -> 10
+  State 7 
+    '=' -> 11
+    -> 12
+  State 8 
+    -> 13
+  State 9 
+    -> 14
+  State 10 
+    -> 15
+  State 11 
+    -> 16
+  State 12 
+    -> 17
+  State 13 
+    '=' -> 18
+    -> 19
+  State 14 
+    tfpdef -> 20
+    -> 20
+  State 15 
+    tfpdef -> 21
+  State 16 
+    test -> 12
+  State 17 
+    ',' -> 22
+    -> 23
+  State 18 
+    -> 24
+  State 19 
+    -> 25
+  State 20 
+    -> 26
+  State 21 
+    -> 27
+  State 22 
+    -> 28
+  State 23 
+    ',' -> 29
+  State 24 
+    test -> 19
+  State 25 
+    ',' -> 30
+    -> 31
+  State 26 
+    ',' -> 32
+    -> 33
+  State 27 
+    ',' -> 34
+    -> 34
+  State 28 
+    TYPE_COMMENT -> 35
+    -> 35
+  State 29 
+    -> 36
+  State 30 
+    -> 37
+  State 31 
+    -> 38
+    -> 39
+  State 32 
+    -> 40
+  State 33 
+    -> 41
+    -> 42
+  State 34 
+    -> 43
+  State 35 
+    -> 44
+  State 36 
+    TYPE_COMMENT -> 45
+    -> 45
+  State 37 
+    TYPE_COMMENT -> 46
+    -> 46
+  State 38 
+    TYPE_COMMENT -> 47
+  State 39 
+    ',' -> 48
+    -> 49
+  State 40 
+    TYPE_COMMENT -> 50
+    -> 50
+  State 41 
+    TYPE_COMMENT -> 51
+  State 42 
+    ',' -> 52
+    -> 53
+  State 43 
+    TYPE_COMMENT -> 54
+    -> 54
+  State 44 
+    tfpdef -> 55
+  State 45 
+    -> 56
+  State 46 
+    -> 57
+  State 47 
+    -> 58
+  State 48 
+    -> 59
+  State 49 
+    -> 58
+  State 50 
+    -> 60
+  State 51 
+    -> 61
+  State 52 
+    -> 62
+  State 53 
+    -> 61
+  State 54 
+    -> 63
+  State 55 
+    -> 64
+  State 56 
+    '/' -> 65
+  State 57 
+    tfpdef -> 66
+  State 58 
+    -> 63
+  State 59 
+    TYPE_COMMENT -> 67
+    -> 67
+  State 60 
+    tfpdef -> 68
+  State 61 
+    -> 63
+  State 62 
+    TYPE_COMMENT -> 69
+    -> 69
+  State 63 
+    -> 70
+  State 64 
+    '=' -> 71
+    -> 72
+  State 65 
+    -> 73
+  State 66 
+    -> 74
+  State 67 
+    -> 75
+  State 68 
+    -> 76
+  State 69 
+    -> 77
+  State 70 (final)
+  State 71 
+    -> 78
+  State 72 
+    -> 17
+  State 73 
+    ',' -> 79
+    -> 80
+  State 74 
+    '=' -> 81
+    -> 82
+  State 75 
+    -> 83
+    -> 84
+    -> 49
+  State 76 
+    '=' -> 85
+    -> 86
+  State 77 
+    '**' -> 87
+    -> 53
+  State 78 
+    test -> 72
+  State 79 
+    -> 88
+  State 80 
+    -> 70
+  State 81 
+    -> 89
+  State 82 
+    -> 25
+  State 83 
+    '*' -> 90
+  State 84 
+    '**' -> 91
+  State 85 
+    -> 92
+  State 86 
+    -> 26
+  State 87 
+    -> 93
+  State 88 
+    -> 94
+    -> 95
+    -> 96
+    -> 80
+  State 89 
+    test -> 82
+  State 90 
+    -> 97
+  State 91 
+    -> 98
+  State 92 
+    test -> 86
+  State 93 
+    tfpdef -> 99
+  State 94 
+    TYPE_COMMENT -> 100
+    -> 100
+  State 95 
+    '*' -> 101
+  State 96 
+    '**' -> 102
+  State 97 
+    tfpdef -> 103
+    -> 103
+  State 98 
+    tfpdef -> 104
+  State 99 
+    -> 105
+  State 100 
+    -> 106
+  State 101 
+    -> 107
+  State 102 
+    -> 108
+  State 103 
+    -> 109
+  State 104 
+    -> 110
+  State 105 
+    ',' -> 111
+    -> 111
+  State 106 
+    tfpdef -> 112
+  State 107 
+    tfpdef -> 113
+    -> 113
+  State 108 
+    tfpdef -> 114
+  State 109 
+    ',' -> 115
+    -> 116
+  State 110 
+    ',' -> 117
+    -> 117
+  State 111 
+    -> 118
+  State 112 
+    -> 119
+  State 113 
+    -> 120
+  State 114 
+    -> 121
+  State 115 
+    -> 122
+  State 116 
+    -> 123
+    -> 124
+  State 117 
+    -> 125
+  State 118 
+    TYPE_COMMENT -> 53
+    -> 53
+  State 119 
+    '=' -> 126
+    -> 127
+  State 120 
+    ',' -> 128
+    -> 129
+  State 121 
+    ',' -> 130
+    -> 130
+  State 122 
+    TYPE_COMMENT -> 131
+    -> 131
+  State 123 
+    TYPE_COMMENT -> 132
+  State 124 
+    ',' -> 133
+    -> 134
+  State 125 
+    TYPE_COMMENT -> 135
+    -> 135
+  State 126 
+    -> 136
+  State 127 
+    -> 137
+  State 128 
+    -> 138
+  State 129 
+    -> 139
+    -> 140
+  State 130 
+    -> 141
+  State 131 
+    -> 142
+  State 132 
+    -> 143
+  State 133 
+    -> 144
+  State 134 
+    -> 143
+  State 135 
+    -> 49
+  State 136 
+    test -> 127
+  State 137 
+    ',' -> 145
+    -> 146
+  State 138 
+    TYPE_COMMENT -> 147
+    -> 147
+  State 139 
+    TYPE_COMMENT -> 148
+  State 140 
+    ',' -> 149
+    -> 150
+  State 141 
+    TYPE_COMMENT -> 151
+    -> 151
+  State 142 
+    tfpdef -> 152
+  State 143 
+    -> 49
+  State 144 
+    TYPE_COMMENT -> 153
+    -> 153
+  State 145 
+    -> 154
+  State 146 
+    -> 155
+    -> 156
+  State 147 
+    -> 157
+  State 148 
+    -> 158
+  State 149 
+    -> 159
+  State 150 
+    -> 158
+  State 151 
+    -> 80
+  State 152 
+    -> 160
+  State 153 
+    -> 161
+  State 154 
+    TYPE_COMMENT -> 162
+    -> 162
+  State 155 
+    TYPE_COMMENT -> 163
+  State 156 
+    ',' -> 164
+    -> 165
+  State 157 
+    tfpdef -> 166
+  State 158 
+    -> 80
+  State 159 
+    TYPE_COMMENT -> 167
+    -> 167
+  State 160 
+    '=' -> 168
+    -> 169
+  State 161 
+    '**' -> 170
+    -> 134
+  State 162 
+    -> 171
+  State 163 
+    -> 172
+  State 164 
+    -> 173
+  State 165 
+    -> 172
+  State 166 
+    -> 174
+  State 167 
+    -> 175
+  State 168 
+    -> 176
+  State 169 
+    -> 109
+  State 170 
+    -> 177
+  State 171 
+    tfpdef -> 178
+  State 172 
+    -> 80
+  State 173 
+    TYPE_COMMENT -> 179
+    -> 179
+  State 174 
+    '=' -> 180
+    -> 181
+  State 175 
+    '**' -> 182
+    -> 150
+  State 176 
+    test -> 169
+  State 177 
+    tfpdef -> 183
+  State 178 
+    -> 184
+  State 179 
+    -> 185
+  State 180 
+    -> 186
+  State 181 
+    -> 120
+  State 182 
+    -> 187
+  State 183 
+    -> 188
+  State 184 
+    '=' -> 189
+    -> 190
+  State 185 
+    -> 191
+    -> 192
+    -> 165
+  State 186 
+    test -> 181
+  State 187 
+    tfpdef -> 193
+  State 188 
+    ',' -> 194
+    -> 194
+  State 189 
+    -> 195
+  State 190 
+    -> 137
+  State 191 
+    '*' -> 196
+  State 192 
+    '**' -> 197
+  State 193 
+    -> 198
+  State 194 
+    -> 199
+  State 195 
+    test -> 190
+  State 196 
+    -> 200
+  State 197 
+    -> 201
+  State 198 
+    ',' -> 202
+    -> 202
+  State 199 
+    TYPE_COMMENT -> 134
+    -> 134
+  State 200 
+    tfpdef -> 203
+    -> 203
+  State 201 
+    tfpdef -> 204
+  State 202 
+    -> 205
+  State 203 
+    -> 206
+  State 204 
+    -> 207
+  State 205 
+    TYPE_COMMENT -> 150
+    -> 150
+  State 206 
+    ',' -> 208
+    -> 209
+  State 207 
+    ',' -> 210
+    -> 210
+  State 208 
+    -> 211
+  State 209 
+    -> 212
+    -> 213
+  State 210 
+    -> 214
+  State 211 
+    TYPE_COMMENT -> 215
+    -> 215
+  State 212 
+    TYPE_COMMENT -> 216
+  State 213 
+    ',' -> 217
+    -> 218
+  State 214 
+    TYPE_COMMENT -> 219
+    -> 219
+  State 215 
+    -> 220
+  State 216 
+    -> 221
+  State 217 
+    -> 222
+  State 218 
+    -> 221
+  State 219 
+    -> 165
+  State 220 
+    tfpdef -> 223
+  State 221 
+    -> 165
+  State 222 
+    TYPE_COMMENT -> 224
+    -> 224
+  State 223 
+    -> 225
+  State 224 
+    -> 226
+  State 225 
+    '=' -> 227
+    -> 228
+  State 226 
+    '**' -> 229
+    -> 218
+  State 227 
+    -> 230
+  State 228 
+    -> 206
+  State 229 
+    -> 231
+  State 230 
+    test -> 228
+  State 231 
+    tfpdef -> 232
+  State 232 
+    -> 233
+  State 233 
+    ',' -> 234
+    -> 234
+  State 234 
+    -> 235
+  State 235 
+    TYPE_COMMENT -> 218
+    -> 218
+Dump of DFA for typedargslist
+  State 0 
+    '*' -> 1
+    '**' -> 2
+    tfpdef -> 3
+  State 1 (final)
+    ',' -> 4
+    TYPE_COMMENT -> 5
+    tfpdef -> 6
+  State 2 
+    tfpdef -> 7
+  State 3 (final)
+    ',' -> 8
+    '=' -> 9
+    TYPE_COMMENT -> 5
+  State 4 (final)
+    '**' -> 11
+    TYPE_COMMENT -> 12
+    tfpdef -> 13
+  State 5 (final)
+  State 6 (final)
+    ',' -> 4
+    TYPE_COMMENT -> 5
+  State 7 (final)
+    ',' -> 14
+    TYPE_COMMENT -> 5
+  State 8 (final)
+    '*' -> 16
+    '**' -> 17
+    '/' -> 18
+    TYPE_COMMENT -> 19
+    tfpdef -> 20
+  State 9 
+    test -> 21
+  State 10 (final)
+  State 11 
+    tfpdef -> 22
+  State 12 (final)
+    '**' -> 11
+    tfpdef -> 13
+  State 13 (final)
+    ',' -> 4
+    '=' -> 23
+    TYPE_COMMENT -> 5
+  State 14 (final)
+    TYPE_COMMENT -> 5
+  State 15 (final)
+  State 16 (final)
+    ',' -> 24
+    TYPE_COMMENT -> 5
+    tfpdef -> 26
+  State 17 
+    tfpdef -> 27
+  State 18 (final)
+    ',' -> 28
+  State 19 (final)
+    '*' -> 16
+    '**' -> 17
+    '/' -> 18
+    tfpdef -> 20
+  State 20 (final)
+    ',' -> 8
+    '=' -> 29
+    TYPE_COMMENT -> 5
+  State 21 (final)
+    ',' -> 8
+    TYPE_COMMENT -> 5
+  State 22 (final)
+    ',' -> 30
+    TYPE_COMMENT -> 5
+  State 23 
+    test -> 6
+  State 24 (final)
+    '**' -> 33
+    TYPE_COMMENT -> 34
+    tfpdef -> 35
+  State 25 (final)
+  State 26 (final)
+    ',' -> 24
+    TYPE_COMMENT -> 5
+  State 27 (final)
+    ',' -> 36
+    TYPE_COMMENT -> 5
+  State 28 (final)
+    '*' -> 38
+    '**' -> 39
+    TYPE_COMMENT -> 40
+    tfpdef -> 41
+  State 29 
+    test -> 21
+  State 30 (final)
+    TYPE_COMMENT -> 5
+  State 31 (final)
+  State 32 (final)
+    ',' -> 4
+    TYPE_COMMENT -> 5
+  State 33 
+    tfpdef -> 43
+  State 34 (final)
+    '**' -> 33
+    tfpdef -> 35
+  State 35 (final)
+    ',' -> 24
+    '=' -> 44
+    TYPE_COMMENT -> 5
+  State 36 (final)
+    TYPE_COMMENT -> 5
+  State 37 (final)
+  State 38 (final)
+    ',' -> 45
+    TYPE_COMMENT -> 5
+    tfpdef -> 47
+  State 39 
+    tfpdef -> 48
+  State 40 
+    tfpdef -> 41
+  State 41 (final)
+    ',' -> 49
+    '=' -> 50
+    TYPE_COMMENT -> 5
+  State 42 (final)
+    ',' -> 8
+    TYPE_COMMENT -> 5
+  State 43 (final)
+    ',' -> 52
+    TYPE_COMMENT -> 5
+  State 44 
+    test -> 26
+  State 45 (final)
+    '**' -> 55
+    TYPE_COMMENT -> 56
+    tfpdef -> 57
+  State 46 (final)
+  State 47 (final)
+    ',' -> 45
+    TYPE_COMMENT -> 5
+  State 48 (final)
+    ',' -> 58
+    TYPE_COMMENT -> 5
+  State 49 (final)
+    '*' -> 60
+    '**' -> 61
+    TYPE_COMMENT -> 62
+    tfpdef -> 63
+  State 50 
+    test -> 64
+  State 51 (final)
+  State 52 (final)
+    TYPE_COMMENT -> 5
+  State 53 (final)
+  State 54 (final)
+    ',' -> 24
+    TYPE_COMMENT -> 5
+  State 55 
+    tfpdef -> 65
+  State 56 (final)
+    '**' -> 55
+    tfpdef -> 57
+  State 57 (final)
+    ',' -> 45
+    '=' -> 66
+    TYPE_COMMENT -> 5
+  State 58 (final)
+    TYPE_COMMENT -> 5
+  State 59 (final)
+  State 60 (final)
+    ',' -> 67
+    TYPE_COMMENT -> 5
+    tfpdef -> 69
+  State 61 
+    tfpdef -> 70
+  State 62 (final)
+    '*' -> 60
+    '**' -> 61
+    tfpdef -> 63
+  State 63 (final)
+    ',' -> 49
+    '=' -> 71
+    TYPE_COMMENT -> 5
+  State 64 (final)
+    ',' -> 49
+    TYPE_COMMENT -> 5
+  State 65 (final)
+    ',' -> 72
+    TYPE_COMMENT -> 5
+  State 66 
+    test -> 47
+  State 67 (final)
+    '**' -> 75
+    TYPE_COMMENT -> 76
+    tfpdef -> 77
+  State 68 (final)
+  State 69 (final)
+    ',' -> 67
+    TYPE_COMMENT -> 5
+  State 70 (final)
+    ',' -> 78
+    TYPE_COMMENT -> 5
+  State 71 
+    test -> 64
+  State 72 (final)
+    TYPE_COMMENT -> 5
+  State 73 (final)
+  State 74 (final)
+    ',' -> 45
+    TYPE_COMMENT -> 5
+  State 75 
+    tfpdef -> 81
+  State 76 (final)
+    '**' -> 75
+    tfpdef -> 77
+  State 77 (final)
+    ',' -> 67
+    '=' -> 82
+    TYPE_COMMENT -> 5
+  State 78 (final)
+    TYPE_COMMENT -> 5
+  State 79 (final)
+  State 80 (final)
+    ',' -> 49
+    TYPE_COMMENT -> 5
+  State 81 (final)
+    ',' -> 83
+    TYPE_COMMENT -> 5
+  State 82 
+    test -> 69
+  State 83 (final)
+    TYPE_COMMENT -> 5
+  State 84 (final)
+  State 85 (final)
+    ',' -> 67
+    TYPE_COMMENT -> 5
+Dump of NFA for tfpdef
+  State 0 
+    NAME -> 1
+  State 1 
+    -> 2
+  State 2 
+    ':' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    test -> 4
+Dump of DFA for tfpdef
+  State 0 
+    NAME -> 1
+  State 1 (final)
+    ':' -> 2
+  State 2 
+    test -> 3
+  State 3 (final)
+Dump of NFA for varargslist
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    vfpdef -> 3
+  State 2 
+    -> 4
+    -> 5
+    -> 6
+  State 3 
+    -> 7
+  State 4 
+    vfpdef -> 8
+  State 5 
+    '*' -> 9
+  State 6 
+    '**' -> 10
+  State 7 
+    '=' -> 11
+    -> 12
+  State 8 
+    -> 13
+  State 9 
+    -> 14
+  State 10 
+    -> 15
+  State 11 
+    -> 16
+  State 12 
+    -> 17
+  State 13 
+    '=' -> 18
+    -> 19
+  State 14 
+    vfpdef -> 20
+    -> 20
+  State 15 
+    vfpdef -> 21
+  State 16 
+    test -> 12
+  State 17 
+    ',' -> 22
+    -> 23
+  State 18 
+    -> 24
+  State 19 
+    -> 25
+  State 20 
+    -> 26
+  State 21 
+    -> 27
+  State 22 
+    -> 28
+  State 23 
+    ',' -> 29
+  State 24 
+    test -> 19
+  State 25 
+    ',' -> 30
+    -> 31
+  State 26 
+    ',' -> 32
+    -> 33
+  State 27 
+    ',' -> 34
+    -> 34
+  State 28 
+    vfpdef -> 35
+  State 29 
+    -> 36
+  State 30 
+    -> 37
+  State 31 
+    ',' -> 38
+    -> 39
+  State 32 
+    -> 40
+  State 33 
+    ',' -> 41
+    -> 42
+  State 34 
+    -> 43
+  State 35 
+    -> 44
+  State 36 
+    '/' -> 45
+  State 37 
+    vfpdef -> 46
+  State 38 
+    -> 47
+  State 39 
+    -> 43
+  State 40 
+    vfpdef -> 48
+  State 41 
+    -> 49
+  State 42 
+    -> 43
+  State 43 
+    -> 50
+  State 44 
+    '=' -> 51
+    -> 52
+  State 45 
+    -> 53
+  State 46 
+    -> 54
+  State 47 
+    -> 55
+    -> 56
+    -> 39
+  State 48 
+    -> 57
+  State 49 
+    '**' -> 58
+    -> 42
+  State 50 (final)
+  State 51 
+    -> 59
+  State 52 
+    -> 17
+  State 53 
+    ',' -> 60
+    -> 61
+  State 54 
+    '=' -> 62
+    -> 63
+  State 55 
+    '*' -> 64
+  State 56 
+    '**' -> 65
+  State 57 
+    '=' -> 66
+    -> 67
+  State 58 
+    -> 68
+  State 59 
+    test -> 52
+  State 60 
+    -> 69
+  State 61 
+    -> 50
+  State 62 
+    -> 70
+  State 63 
+    -> 25
+  State 64 
+    -> 71
+  State 65 
+    -> 72
+  State 66 
+    -> 73
+  State 67 
+    -> 26
+  State 68 
+    vfpdef -> 74
+  State 69 
+    -> 75
+    -> 76
+    -> 77
+    -> 61
+  State 70 
+    test -> 63
+  State 71 
+    vfpdef -> 78
+    -> 78
+  State 72 
+    vfpdef -> 79
+  State 73 
+    test -> 67
+  State 74 
+    -> 80
+  State 75 
+    vfpdef -> 81
+  State 76 
+    '*' -> 82
+  State 77 
+    '**' -> 83
+  State 78 
+    -> 84
+  State 79 
+    -> 85
+  State 80 
+    ',' -> 42
+    -> 42
+  State 81 
+    -> 86
+  State 82 
+    -> 87
+  State 83 
+    -> 88
+  State 84 
+    ',' -> 89
+    -> 90
+  State 85 
+    ',' -> 91
+    -> 91
+  State 86 
+    '=' -> 92
+    -> 93
+  State 87 
+    vfpdef -> 94
+    -> 94
+  State 88 
+    vfpdef -> 95
+  State 89 
+    -> 96
+  State 90 
+    ',' -> 97
+    -> 98
+  State 91 
+    -> 39
+  State 92 
+    -> 99
+  State 93 
+    -> 100
+  State 94 
+    -> 101
+  State 95 
+    -> 102
+  State 96 
+    vfpdef -> 103
+  State 97 
+    -> 104
+  State 98 
+    -> 39
+  State 99 
+    test -> 93
+  State 100 
+    ',' -> 105
+    -> 106
+  State 101 
+    ',' -> 107
+    -> 108
+  State 102 
+    ',' -> 109
+    -> 109
+  State 103 
+    -> 110
+  State 104 
+    '**' -> 111
+    -> 98
+  State 105 
+    -> 112
+  State 106 
+    ',' -> 113
+    -> 114
+  State 107 
+    -> 115
+  State 108 
+    ',' -> 116
+    -> 117
+  State 109 
+    -> 61
+  State 110 
+    '=' -> 118
+    -> 119
+  State 111 
+    -> 120
+  State 112 
+    vfpdef -> 121
+  State 113 
+    -> 122
+  State 114 
+    -> 61
+  State 115 
+    vfpdef -> 123
+  State 116 
+    -> 124
+  State 117 
+    -> 61
+  State 118 
+    -> 125
+  State 119 
+    -> 84
+  State 120 
+    vfpdef -> 126
+  State 121 
+    -> 127
+  State 122 
+    -> 128
+    -> 129
+    -> 114
+  State 123 
+    -> 130
+  State 124 
+    '**' -> 131
+    -> 117
+  State 125 
+    test -> 119
+  State 126 
+    -> 132
+  State 127 
+    '=' -> 133
+    -> 134
+  State 128 
+    '*' -> 135
+  State 129 
+    '**' -> 136
+  State 130 
+    '=' -> 137
+    -> 138
+  State 131 
+    -> 139
+  State 132 
+    ',' -> 98
+    -> 98
+  State 133 
+    -> 140
+  State 134 
+    -> 100
+  State 135 
+    -> 141
+  State 136 
+    -> 142
+  State 137 
+    -> 143
+  State 138 
+    -> 101
+  State 139 
+    vfpdef -> 144
+  State 140 
+    test -> 134
+  State 141 
+    vfpdef -> 145
+    -> 145
+  State 142 
+    vfpdef -> 146
+  State 143 
+    test -> 138
+  State 144 
+    -> 147
+  State 145 
+    -> 148
+  State 146 
+    -> 149
+  State 147 
+    ',' -> 117
+    -> 117
+  State 148 
+    ',' -> 150
+    -> 151
+  State 149 
+    ',' -> 152
+    -> 152
+  State 150 
+    -> 153
+  State 151 
+    ',' -> 154
+    -> 155
+  State 152 
+    -> 114
+  State 153 
+    vfpdef -> 156
+  State 154 
+    -> 157
+  State 155 
+    -> 114
+  State 156 
+    -> 158
+  State 157 
+    '**' -> 159
+    -> 155
+  State 158 
+    '=' -> 160
+    -> 161
+  State 159 
+    -> 162
+  State 160 
+    -> 163
+  State 161 
+    -> 148
+  State 162 
+    vfpdef -> 164
+  State 163 
+    test -> 161
+  State 164 
+    -> 165
+  State 165 
+    ',' -> 155
+    -> 155
+Dump of DFA for varargslist
+  State 0 
+    '*' -> 1
+    '**' -> 2
+    vfpdef -> 3
+  State 1 (final)
+    ',' -> 4
+    vfpdef -> 5
+  State 2 
+    vfpdef -> 6
+  State 3 (final)
+    ',' -> 7
+    '=' -> 8
+  State 4 (final)
+    '**' -> 9
+    vfpdef -> 10
+  State 5 (final)
+    ',' -> 4
+  State 6 (final)
+    ',' -> 11
+  State 7 (final)
+    '*' -> 12
+    '**' -> 13
+    '/' -> 14
+    vfpdef -> 15
+  State 8 
+    test -> 16
+  State 9 
+    vfpdef -> 17
+  State 10 (final)
+    ',' -> 4
+    '=' -> 18
+  State 11 (final)
+  State 12 (final)
+    ',' -> 19
+    vfpdef -> 20
+  State 13 
+    vfpdef -> 21
+  State 14 (final)
+    ',' -> 22
+  State 15 (final)
+    ',' -> 7
+    '=' -> 23
+  State 16 (final)
+    ',' -> 7
+  State 17 (final)
+    ',' -> 11
+  State 18 
+    test -> 5
+  State 19 (final)
+    '**' -> 26
+    vfpdef -> 27
+  State 20 (final)
+    ',' -> 19
+  State 21 (final)
+    ',' -> 11
+  State 22 (final)
+    '*' -> 29
+    '**' -> 30
+    vfpdef -> 31
+  State 23 
+    test -> 16
+  State 24 (final)
+  State 25 (final)
+    ',' -> 4
+  State 26 
+    vfpdef -> 33
+  State 27 (final)
+    ',' -> 19
+    '=' -> 34
+  State 28 (final)
+  State 29 (final)
+    ',' -> 35
+    vfpdef -> 36
+  State 30 
+    vfpdef -> 37
+  State 31 (final)
+    ',' -> 38
+    '=' -> 39
+  State 32 (final)
+    ',' -> 7
+  State 33 (final)
+    ',' -> 11
+  State 34 
+    test -> 20
+  State 35 (final)
+    '**' -> 42
+    vfpdef -> 43
+  State 36 (final)
+    ',' -> 35
+  State 37 (final)
+    ',' -> 11
+  State 38 (final)
+    '*' -> 45
+    '**' -> 46
+    vfpdef -> 47
+  State 39 
+    test -> 48
+  State 40 (final)
+  State 41 (final)
+    ',' -> 19
+  State 42 
+    vfpdef -> 49
+  State 43 (final)
+    ',' -> 35
+    '=' -> 50
+  State 44 (final)
+  State 45 (final)
+    ',' -> 51
+    vfpdef -> 52
+  State 46 
+    vfpdef -> 53
+  State 47 (final)
+    ',' -> 38
+    '=' -> 54
+  State 48 (final)
+    ',' -> 38
+  State 49 (final)
+    ',' -> 11
+  State 50 
+    test -> 36
+  State 51 (final)
+    '**' -> 57
+    vfpdef -> 58
+  State 52 (final)
+    ',' -> 51
+  State 53 (final)
+    ',' -> 11
+  State 54 
+    test -> 48
+  State 55 (final)
+  State 56 (final)
+    ',' -> 35
+  State 57 
+    vfpdef -> 61
+  State 58 (final)
+    ',' -> 51
+    '=' -> 62
+  State 59 (final)
+  State 60 (final)
+    ',' -> 38
+  State 61 (final)
+    ',' -> 11
+  State 62 
+    test -> 52
+  State 63 (final)
+  State 64 (final)
+    ',' -> 51
+Dump of NFA for vfpdef
+  State 0 
+    NAME -> 1
+  State 1 (final)
+Dump of DFA for vfpdef
+  State 0 
+    NAME -> 1
+  State 1 (final)
+Dump of NFA for stmt
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    simple_stmt -> 3
+  State 2 
+    compound_stmt -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 (final)
+Dump of DFA for stmt
+  State 0 
+    compound_stmt -> 1
+    simple_stmt -> 1
+  State 1 (final)
+  State 2 (final)
+Dump of NFA for simple_stmt
+  State 0 
+    small_stmt -> 1
+  State 1 
+    -> 2
+  State 2 
+    ';' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    ';' -> 6
+    -> 6
+  State 5 
+    small_stmt -> 7
+  State 6 
+    -> 8
+  State 7 
+    -> 2
+  State 8 
+    NEWLINE -> 9
+  State 9 (final)
+Dump of DFA for simple_stmt
+  State 0 
+    small_stmt -> 1
+  State 1 
+    ';' -> 2
+    NEWLINE -> 3
+  State 2 
+    NEWLINE -> 3
+    small_stmt -> 1
+  State 3 (final)
+  State 4 
+    ';' -> 2
+    NEWLINE -> 3
+Dump of NFA for small_stmt
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+    -> 8
+  State 1 
+    expr_stmt -> 9
+  State 2 
+    del_stmt -> 10
+  State 3 
+    pass_stmt -> 11
+  State 4 
+    flow_stmt -> 12
+  State 5 
+    import_stmt -> 13
+  State 6 
+    global_stmt -> 14
+  State 7 
+    nonlocal_stmt -> 15
+  State 8 
+    assert_stmt -> 16
+  State 9 
+    -> 17
+  State 10 
+    -> 17
+  State 11 
+    -> 17
+  State 12 
+    -> 17
+  State 13 
+    -> 17
+  State 14 
+    -> 17
+  State 15 
+    -> 17
+  State 16 
+    -> 17
+  State 17 (final)
+Dump of DFA for small_stmt
+  State 0 
+    assert_stmt -> 1
+    del_stmt -> 1
+    expr_stmt -> 1
+    flow_stmt -> 1
+    global_stmt -> 1
+    import_stmt -> 1
+    nonlocal_stmt -> 1
+    pass_stmt -> 1
+  State 1 (final)
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+  State 6 (final)
+  State 7 (final)
+  State 8 (final)
+Dump of NFA for expr_stmt
+  State 0 
+    testlist_star_expr -> 1
+  State 1 
+    -> 2
+  State 2 
+    -> 3
+    -> 4
+    -> 5
+  State 3 
+    annassign -> 6
+  State 4 
+    augassign -> 7
+  State 5 
+    '=' -> 8
+    -> 9
+  State 6 
+    -> 10
+  State 7 
+    -> 11
+  State 8 
+    -> 12
+  State 9 
+    -> 10
+  State 10 (final)
+  State 11 
+    -> 13
+    -> 14
+  State 12 
+    -> 15
+    -> 16
+  State 13 
+    yield_expr -> 17
+  State 14 
+    testlist -> 18
+  State 15 
+    yield_expr -> 19
+  State 16 
+    testlist_star_expr -> 20
+  State 17 
+    -> 21
+  State 18 
+    -> 21
+  State 19 
+    -> 22
+  State 20 
+    -> 22
+  State 21 
+    -> 10
+  State 22 
+    -> 5
+    -> 23
+  State 23 
+    TYPE_COMMENT -> 9
+    -> 9
+Dump of DFA for expr_stmt
+  State 0 
+    testlist_star_expr -> 1
+  State 1 (final)
+    '=' -> 2
+    annassign -> 3
+    augassign -> 4
+  State 2 
+    testlist_star_expr -> 5
+    yield_expr -> 5
+  State 3 (final)
+  State 4 
+    testlist -> 3
+    yield_expr -> 3
+  State 5 (final)
+    '=' -> 2
+    TYPE_COMMENT -> 3
+  State 6 (final)
+    '=' -> 2
+    TYPE_COMMENT -> 3
+  State 7 (final)
+  State 8 (final)
+  State 9 (final)
+Dump of NFA for annassign
+  State 0 
+    ':' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test -> 3
+  State 3 
+    -> 4
+  State 4 
+    '=' -> 5
+    -> 6
+  State 5 
+    -> 7
+  State 6 (final)
+  State 7 
+    -> 8
+    -> 9
+  State 8 
+    yield_expr -> 10
+  State 9 
+    testlist_star_expr -> 11
+  State 10 
+    -> 6
+  State 11 
+    -> 6
+Dump of DFA for annassign
+  State 0 
+    ':' -> 1
+  State 1 
+    test -> 2
+  State 2 (final)
+    '=' -> 3
+  State 3 
+    testlist_star_expr -> 4
+    yield_expr -> 4
+  State 4 (final)
+  State 5 (final)
+Dump of NFA for testlist_star_expr
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    test -> 3
+  State 2 
+    star_expr -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 
+    -> 6
+  State 6 
+    ',' -> 7
+    -> 8
+  State 7 
+    -> 9
+  State 8 
+    ',' -> 10
+    -> 10
+  State 9 
+    -> 11
+    -> 12
+  State 10 (final)
+  State 11 
+    test -> 13
+  State 12 
+    star_expr -> 14
+  State 13 
+    -> 15
+  State 14 
+    -> 15
+  State 15 
+    -> 6
+Dump of DFA for testlist_star_expr
+  State 0 
+    star_expr -> 1
+    test -> 1
+  State 1 (final)
+    ',' -> 3
+  State 2 (final)
+    ',' -> 3
+  State 3 (final)
+    star_expr -> 1
+    test -> 1
+  State 4 (final)
+    ',' -> 3
+  State 5 (final)
+    ',' -> 3
+Dump of NFA for augassign
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+    -> 8
+    -> 9
+    -> 10
+    -> 11
+    -> 12
+    -> 13
+  State 1 
+    '+=' -> 14
+  State 2 
+    '-=' -> 15
+  State 3 
+    '*=' -> 16
+  State 4 
+    '@=' -> 17
+  State 5 
+    '/=' -> 18
+  State 6 
+    '%=' -> 19
+  State 7 
+    '&=' -> 20
+  State 8 
+    '|=' -> 21
+  State 9 
+    '^=' -> 22
+  State 10 
+    '<<=' -> 23
+  State 11 
+    '>>=' -> 24
+  State 12 
+    '**=' -> 25
+  State 13 
+    '//=' -> 26
+  State 14 
+    -> 27
+  State 15 
+    -> 27
+  State 16 
+    -> 27
+  State 17 
+    -> 27
+  State 18 
+    -> 27
+  State 19 
+    -> 27
+  State 20 
+    -> 27
+  State 21 
+    -> 27
+  State 22 
+    -> 27
+  State 23 
+    -> 27
+  State 24 
+    -> 27
+  State 25 
+    -> 27
+  State 26 
+    -> 27
+  State 27 (final)
+Dump of DFA for augassign
+  State 0 
+    '%=' -> 1
+    '&=' -> 1
+    '**=' -> 1
+    '*=' -> 1
+    '+=' -> 1
+    '-=' -> 1
+    '//=' -> 1
+    '/=' -> 1
+    '<<=' -> 1
+    '>>=' -> 1
+    '@=' -> 1
+    '^=' -> 1
+    '|=' -> 1
+  State 1 (final)
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+  State 6 (final)
+  State 7 (final)
+  State 8 (final)
+  State 9 (final)
+  State 10 (final)
+  State 11 (final)
+  State 12 (final)
+  State 13 (final)
+Dump of NFA for del_stmt
+  State 0 
+    'del' -> 1
+  State 1 
+    -> 2
+  State 2 
+    exprlist -> 3
+  State 3 (final)
+Dump of DFA for del_stmt
+  State 0 
+    'del' -> 1
+  State 1 
+    exprlist -> 2
+  State 2 (final)
+Dump of NFA for pass_stmt
+  State 0 
+    'pass' -> 1
+  State 1 (final)
+Dump of DFA for pass_stmt
+  State 0 
+    'pass' -> 1
+  State 1 (final)
+Dump of NFA for flow_stmt
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+  State 1 
+    break_stmt -> 6
+  State 2 
+    continue_stmt -> 7
+  State 3 
+    return_stmt -> 8
+  State 4 
+    raise_stmt -> 9
+  State 5 
+    yield_stmt -> 10
+  State 6 
+    -> 11
+  State 7 
+    -> 11
+  State 8 
+    -> 11
+  State 9 
+    -> 11
+  State 10 
+    -> 11
+  State 11 (final)
+Dump of DFA for flow_stmt
+  State 0 
+    break_stmt -> 1
+    continue_stmt -> 1
+    raise_stmt -> 1
+    return_stmt -> 1
+    yield_stmt -> 1
+  State 1 (final)
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+Dump of NFA for break_stmt
+  State 0 
+    'break' -> 1
+  State 1 (final)
+Dump of DFA for break_stmt
+  State 0 
+    'break' -> 1
+  State 1 (final)
+Dump of NFA for continue_stmt
+  State 0 
+    'continue' -> 1
+  State 1 (final)
+Dump of DFA for continue_stmt
+  State 0 
+    'continue' -> 1
+  State 1 (final)
+Dump of NFA for return_stmt
+  State 0 
+    'return' -> 1
+  State 1 
+    -> 2
+  State 2 
+    testlist_star_expr -> 3
+    -> 3
+  State 3 (final)
+Dump of DFA for return_stmt
+  State 0 
+    'return' -> 1
+  State 1 (final)
+    testlist_star_expr -> 2
+  State 2 (final)
+Dump of NFA for yield_stmt
+  State 0 
+    yield_expr -> 1
+  State 1 (final)
+Dump of DFA for yield_stmt
+  State 0 
+    yield_expr -> 1
+  State 1 (final)
+Dump of NFA for raise_stmt
+  State 0 
+    'raise' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    'from' -> 6
+    -> 4
+  State 6 
+    -> 7
+  State 7 
+    test -> 4
+Dump of DFA for raise_stmt
+  State 0 
+    'raise' -> 1
+  State 1 (final)
+    test -> 2
+  State 2 (final)
+    'from' -> 3
+  State 3 
+    test -> 4
+  State 4 (final)
+Dump of NFA for import_stmt
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    import_name -> 3
+  State 2 
+    import_from -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 (final)
+Dump of DFA for import_stmt
+  State 0 
+    import_from -> 1
+    import_name -> 1
+  State 1 (final)
+  State 2 (final)
+Dump of NFA for import_name
+  State 0 
+    'import' -> 1
+  State 1 
+    -> 2
+  State 2 
+    dotted_as_names -> 3
+  State 3 (final)
+Dump of DFA for import_name
+  State 0 
+    'import' -> 1
+  State 1 
+    dotted_as_names -> 2
+  State 2 (final)
+Dump of NFA for import_from
+  State 0 
+    'from' -> 1
+  State 1 
+    -> 2
+  State 2 
+    -> 3
+    -> 4
+  State 3 
+    -> 5
+    -> 6
+    -> 7
+  State 4 
+    -> 8
+    -> 9
+  State 5 
+    '.' -> 10
+  State 6 
+    '...' -> 11
+  State 7 
+    dotted_name -> 12
+  State 8 
+    '.' -> 13
+  State 9 
+    '...' -> 14
+  State 10 
+    -> 15
+  State 11 
+    -> 15
+  State 12 
+    -> 16
+  State 13 
+    -> 17
+  State 14 
+    -> 17
+  State 15 
+    -> 3
+  State 16 
+    -> 18
+  State 17 
+    -> 4
+    -> 16
+  State 18 
+    'import' -> 19
+  State 19 
+    -> 20
+  State 20 
+    -> 21
+    -> 22
+    -> 23
+  State 21 
+    '*' -> 24
+  State 22 
+    '(' -> 25
+  State 23 
+    import_as_names -> 26
+  State 24 
+    -> 27
+  State 25 
+    -> 28
+  State 26 
+    -> 27
+  State 27 (final)
+  State 28 
+    import_as_names -> 29
+  State 29 
+    -> 30
+  State 30 
+    ')' -> 31
+  State 31 
+    -> 27
+Dump of DFA for import_from
+  State 0 
+    'from' -> 1
+  State 1 
+    '.' -> 2
+    '...' -> 2
+    dotted_name -> 4
+  State 2 
+    '.' -> 2
+    '...' -> 2
+    'import' -> 5
+    dotted_name -> 4
+  State 3 
+    '.' -> 2
+    '...' -> 2
+    'import' -> 5
+    dotted_name -> 4
+  State 4 
+    'import' -> 5
+  State 5 
+    '(' -> 6
+    '*' -> 7
+    import_as_names -> 7
+  State 6 
+    import_as_names -> 9
+  State 7 (final)
+  State 8 (final)
+  State 9 
+    ')' -> 7
+  State 10 (final)
+Dump of NFA for import_as_name
+  State 0 
+    NAME -> 1
+  State 1 
+    -> 2
+  State 2 
+    'as' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    NAME -> 4
+Dump of DFA for import_as_name
+  State 0 
+    NAME -> 1
+  State 1 (final)
+    'as' -> 2
+  State 2 
+    NAME -> 3
+  State 3 (final)
+Dump of NFA for dotted_as_name
+  State 0 
+    dotted_name -> 1
+  State 1 
+    -> 2
+  State 2 
+    'as' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    NAME -> 4
+Dump of DFA for dotted_as_name
+  State 0 
+    dotted_name -> 1
+  State 1 (final)
+    'as' -> 2
+  State 2 
+    NAME -> 3
+  State 3 (final)
+Dump of NFA for import_as_names
+  State 0 
+    import_as_name -> 1
+  State 1 
+    -> 2
+  State 2 
+    ',' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    ',' -> 6
+    -> 6
+  State 5 
+    import_as_name -> 7
+  State 6 (final)
+  State 7 
+    -> 2
+Dump of DFA for import_as_names
+  State 0 
+    import_as_name -> 1
+  State 1 (final)
+    ',' -> 2
+  State 2 (final)
+    import_as_name -> 1
+  State 3 (final)
+    ',' -> 2
+Dump of NFA for dotted_as_names
+  State 0 
+    dotted_as_name -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    ',' -> 3
+  State 3 
+    -> 4
+  State 4 
+    dotted_as_name -> 5
+  State 5 
+    -> 2
+Dump of DFA for dotted_as_names
+  State 0 
+    dotted_as_name -> 1
+  State 1 (final)
+    ',' -> 2
+  State 2 
+    dotted_as_name -> 1
+  State 3 (final)
+    ',' -> 2
+Dump of NFA for dotted_name
+  State 0 
+    NAME -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    '.' -> 3
+  State 3 
+    -> 4
+  State 4 
+    NAME -> 5
+  State 5 
+    -> 2
+Dump of DFA for dotted_name
+  State 0 
+    NAME -> 1
+  State 1 (final)
+    '.' -> 2
+  State 2 
+    NAME -> 1
+  State 3 (final)
+    '.' -> 2
+Dump of NFA for global_stmt
+  State 0 
+    'global' -> 1
+  State 1 
+    -> 2
+  State 2 
+    NAME -> 3
+  State 3 
+    -> 4
+  State 4 (final)
+    ',' -> 5
+  State 5 
+    -> 6
+  State 6 
+    NAME -> 7
+  State 7 
+    -> 4
+Dump of DFA for global_stmt
+  State 0 
+    'global' -> 1
+  State 1 
+    NAME -> 2
+  State 2 (final)
+    ',' -> 3
+  State 3 
+    NAME -> 2
+  State 4 (final)
+    ',' -> 3
+Dump of NFA for nonlocal_stmt
+  State 0 
+    'nonlocal' -> 1
+  State 1 
+    -> 2
+  State 2 
+    NAME -> 3
+  State 3 
+    -> 4
+  State 4 (final)
+    ',' -> 5
+  State 5 
+    -> 6
+  State 6 
+    NAME -> 7
+  State 7 
+    -> 4
+Dump of DFA for nonlocal_stmt
+  State 0 
+    'nonlocal' -> 1
+  State 1 
+    NAME -> 2
+  State 2 (final)
+    ',' -> 3
+  State 3 
+    NAME -> 2
+  State 4 (final)
+    ',' -> 3
+Dump of NFA for assert_stmt
+  State 0 
+    'assert' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test -> 3
+  State 3 
+    -> 4
+  State 4 
+    ',' -> 5
+    -> 6
+  State 5 
+    -> 7
+  State 6 (final)
+  State 7 
+    test -> 6
+Dump of DFA for assert_stmt
+  State 0 
+    'assert' -> 1
+  State 1 
+    test -> 2
+  State 2 (final)
+    ',' -> 3
+  State 3 
+    test -> 4
+  State 4 (final)
+Dump of NFA for compound_stmt
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+    -> 8
+    -> 9
+  State 1 
+    if_stmt -> 10
+  State 2 
+    while_stmt -> 11
+  State 3 
+    for_stmt -> 12
+  State 4 
+    try_stmt -> 13
+  State 5 
+    with_stmt -> 14
+  State 6 
+    funcdef -> 15
+  State 7 
+    classdef -> 16
+  State 8 
+    decorated -> 17
+  State 9 
+    async_stmt -> 18
+  State 10 
+    -> 19
+  State 11 
+    -> 19
+  State 12 
+    -> 19
+  State 13 
+    -> 19
+  State 14 
+    -> 19
+  State 15 
+    -> 19
+  State 16 
+    -> 19
+  State 17 
+    -> 19
+  State 18 
+    -> 19
+  State 19 (final)
+Dump of DFA for compound_stmt
+  State 0 
+    async_stmt -> 1
+    classdef -> 1
+    decorated -> 1
+    for_stmt -> 1
+    funcdef -> 1
+    if_stmt -> 1
+    try_stmt -> 1
+    while_stmt -> 1
+    with_stmt -> 1
+  State 1 (final)
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+  State 6 (final)
+  State 7 (final)
+  State 8 (final)
+  State 9 (final)
+Dump of NFA for async_stmt
+  State 0 
+    ASYNC -> 1
+  State 1 
+    -> 2
+  State 2 
+    -> 3
+    -> 4
+    -> 5
+  State 3 
+    funcdef -> 6
+  State 4 
+    with_stmt -> 7
+  State 5 
+    for_stmt -> 8
+  State 6 
+    -> 9
+  State 7 
+    -> 9
+  State 8 
+    -> 9
+  State 9 (final)
+Dump of DFA for async_stmt
+  State 0 
+    ASYNC -> 1
+  State 1 
+    for_stmt -> 2
+    funcdef -> 2
+    with_stmt -> 2
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+Dump of NFA for if_stmt
+  State 0 
+    'if' -> 1
+  State 1 
+    -> 2
+  State 2 
+    namedexpr_test -> 3
+  State 3 
+    -> 4
+  State 4 
+    ':' -> 5
+  State 5 
+    -> 6
+  State 6 
+    suite -> 7
+  State 7 
+    -> 8
+  State 8 
+    'elif' -> 9
+    -> 10
+  State 9 
+    -> 11
+  State 10 
+    'else' -> 12
+    -> 13
+  State 11 
+    namedexpr_test -> 14
+  State 12 
+    -> 15
+  State 13 (final)
+  State 14 
+    -> 16
+  State 15 
+    ':' -> 17
+  State 16 
+    ':' -> 18
+  State 17 
+    -> 19
+  State 18 
+    -> 20
+  State 19 
+    suite -> 13
+  State 20 
+    suite -> 21
+  State 21 
+    -> 8
+Dump of DFA for if_stmt
+  State 0 
+    'if' -> 1
+  State 1 
+    namedexpr_test -> 2
+  State 2 
+    ':' -> 3
+  State 3 
+    suite -> 4
+  State 4 (final)
+    'elif' -> 5
+    'else' -> 6
+  State 5 
+    namedexpr_test -> 7
+  State 6 
+    ':' -> 8
+  State 7 
+    ':' -> 9
+  State 8 
+    suite -> 10
+  State 9 
+    suite -> 4
+  State 10 (final)
+  State 11 (final)
+    'elif' -> 5
+    'else' -> 6
+Dump of NFA for while_stmt
+  State 0 
+    'while' -> 1
+  State 1 
+    -> 2
+  State 2 
+    namedexpr_test -> 3
+  State 3 
+    -> 4
+  State 4 
+    ':' -> 5
+  State 5 
+    -> 6
+  State 6 
+    suite -> 7
+  State 7 
+    -> 8
+  State 8 
+    'else' -> 9
+    -> 10
+  State 9 
+    -> 11
+  State 10 (final)
+  State 11 
+    ':' -> 12
+  State 12 
+    -> 13
+  State 13 
+    suite -> 10
+Dump of DFA for while_stmt
+  State 0 
+    'while' -> 1
+  State 1 
+    namedexpr_test -> 2
+  State 2 
+    ':' -> 3
+  State 3 
+    suite -> 4
+  State 4 (final)
+    'else' -> 5
+  State 5 
+    ':' -> 6
+  State 6 
+    suite -> 7
+  State 7 (final)
+Dump of NFA for for_stmt
+  State 0 
+    'for' -> 1
+  State 1 
+    -> 2
+  State 2 
+    exprlist -> 3
+  State 3 
+    -> 4
+  State 4 
+    'in' -> 5
+  State 5 
+    -> 6
+  State 6 
+    testlist -> 7
+  State 7 
+    -> 8
+  State 8 
+    ':' -> 9
+  State 9 
+    -> 10
+  State 10 
+    TYPE_COMMENT -> 11
+    -> 11
+  State 11 
+    -> 12
+  State 12 
+    suite -> 13
+  State 13 
+    -> 14
+  State 14 
+    'else' -> 15
+    -> 16
+  State 15 
+    -> 17
+  State 16 (final)
+  State 17 
+    ':' -> 18
+  State 18 
+    -> 19
+  State 19 
+    suite -> 16
+Dump of DFA for for_stmt
+  State 0 
+    'for' -> 1
+  State 1 
+    exprlist -> 2
+  State 2 
+    'in' -> 3
+  State 3 
+    testlist -> 4
+  State 4 
+    ':' -> 5
+  State 5 
+    TYPE_COMMENT -> 6
+    suite -> 7
+  State 6 
+    suite -> 7
+  State 7 (final)
+    'else' -> 8
+  State 8 
+    ':' -> 9
+  State 9 
+    suite -> 10
+  State 10 (final)
+Dump of NFA for try_stmt
+  State 0 
+    'try' -> 1
+  State 1 
+    -> 2
+  State 2 
+    ':' -> 3
+  State 3 
+    -> 4
+  State 4 
+    suite -> 5
+  State 5 
+    -> 6
+  State 6 
+    -> 7
+    -> 8
+  State 7 
+    except_clause -> 9
+  State 8 
+    'finally' -> 10
+  State 9 
+    -> 11
+  State 10 
+    -> 12
+  State 11 
+    ':' -> 13
+  State 12 
+    ':' -> 14
+  State 13 
+    -> 15
+  State 14 
+    -> 16
+  State 15 
+    suite -> 17
+  State 16 
+    suite -> 18
+  State 17 
+    -> 7
+    -> 19
+  State 18 
+    -> 20
+  State 19 
+    'else' -> 21
+    -> 22
+  State 20 (final)
+  State 21 
+    -> 23
+  State 22 
+    -> 24
+  State 23 
+    ':' -> 25
+  State 24 
+    'finally' -> 26
+    -> 27
+  State 25 
+    -> 28
+  State 26 
+    -> 29
+  State 27 
+    -> 20
+  State 28 
+    suite -> 22
+  State 29 
+    ':' -> 30
+  State 30 
+    -> 31
+  State 31 
+    suite -> 27
+Dump of DFA for try_stmt
+  State 0 
+    'try' -> 1
+  State 1 
+    ':' -> 2
+  State 2 
+    suite -> 3
+  State 3 
+    'finally' -> 4
+    except_clause -> 5
+  State 4 
+    ':' -> 6
+  State 5 
+    ':' -> 7
+  State 6 
+    suite -> 8
+  State 7 
+    suite -> 9
+  State 8 (final)
+  State 9 (final)
+    'else' -> 10
+    'finally' -> 11
+    except_clause -> 5
+  State 10 
+    ':' -> 12
+  State 11 
+    ':' -> 13
+  State 12 
+    suite -> 14
+  State 13 
+    suite -> 8
+  State 14 (final)
+    'finally' -> 11
+  State 15 (final)
+Dump of NFA for with_stmt
+  State 0 
+    'with' -> 1
+  State 1 
+    -> 2
+  State 2 
+    with_item -> 3
+  State 3 
+    -> 4
+  State 4 
+    ',' -> 5
+    -> 6
+  State 5 
+    -> 7
+  State 6 
+    ':' -> 8
+  State 7 
+    with_item -> 9
+  State 8 
+    -> 10
+  State 9 
+    -> 4
+  State 10 
+    TYPE_COMMENT -> 11
+    -> 11
+  State 11 
+    -> 12
+  State 12 
+    suite -> 13
+  State 13 (final)
+Dump of DFA for with_stmt
+  State 0 
+    'with' -> 1
+  State 1 
+    with_item -> 2
+  State 2 
+    ',' -> 3
+    ':' -> 4
+  State 3 
+    with_item -> 2
+  State 4 
+    TYPE_COMMENT -> 6
+    suite -> 7
+  State 5 
+    ',' -> 3
+    ':' -> 4
+  State 6 
+    suite -> 7
+  State 7 (final)
+Dump of NFA for with_item
+  State 0 
+    test -> 1
+  State 1 
+    -> 2
+  State 2 
+    'as' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    expr -> 4
+Dump of DFA for with_item
+  State 0 
+    test -> 1
+  State 1 (final)
+    'as' -> 2
+  State 2 
+    expr -> 3
+  State 3 (final)
+Dump of NFA for except_clause
+  State 0 
+    'except' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    'as' -> 6
+    -> 4
+  State 6 
+    -> 7
+  State 7 
+    NAME -> 4
+Dump of DFA for except_clause
+  State 0 
+    'except' -> 1
+  State 1 (final)
+    test -> 2
+  State 2 (final)
+    'as' -> 3
+  State 3 
+    NAME -> 4
+  State 4 (final)
+Dump of NFA for suite
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    simple_stmt -> 3
+  State 2 
+    NEWLINE -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 (final)
+  State 6 
+    INDENT -> 7
+  State 7 
+    -> 8
+  State 8 
+    stmt -> 9
+  State 9 
+    -> 8
+    -> 10
+  State 10 
+    DEDENT -> 11
+  State 11 
+    -> 5
+Dump of DFA for suite
+  State 0 
+    NEWLINE -> 1
+    simple_stmt -> 2
+  State 1 
+    INDENT -> 3
+  State 2 (final)
+  State 3 
+    stmt -> 4
+  State 4 
+    DEDENT -> 2
+    stmt -> 4
+  State 5 (final)
+Dump of NFA for namedexpr_test
+  State 0 
+    test -> 1
+  State 1 
+    -> 2
+  State 2 
+    ':=' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    test -> 4
+Dump of DFA for namedexpr_test
+  State 0 
+    test -> 1
+  State 1 (final)
+    ':=' -> 2
+  State 2 
+    test -> 3
+  State 3 (final)
+Dump of NFA for test
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    or_test -> 3
+  State 2 
+    lambdef -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 
+    'if' -> 7
+    -> 8
+  State 6 (final)
+  State 7 
+    -> 9
+  State 8 
+    -> 6
+  State 9 
+    or_test -> 10
+  State 10 
+    -> 11
+  State 11 
+    'else' -> 12
+  State 12 
+    -> 13
+  State 13 
+    test -> 8
+Dump of DFA for test
+  State 0 
+    lambdef -> 1
+    or_test -> 2
+  State 1 (final)
+  State 2 (final)
+    'if' -> 3
+  State 3 
+    or_test -> 4
+  State 4 
+    'else' -> 5
+  State 5 
+    test -> 1
+  State 6 (final)
+Dump of NFA for test_nocond
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    or_test -> 3
+  State 2 
+    lambdef_nocond -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 (final)
+Dump of DFA for test_nocond
+  State 0 
+    lambdef_nocond -> 1
+    or_test -> 1
+  State 1 (final)
+  State 2 (final)
+Dump of NFA for lambdef
+  State 0 
+    'lambda' -> 1
+  State 1 
+    -> 2
+  State 2 
+    varargslist -> 3
+    -> 3
+  State 3 
+    -> 4
+  State 4 
+    ':' -> 5
+  State 5 
+    -> 6
+  State 6 
+    test -> 7
+  State 7 (final)
+Dump of DFA for lambdef
+  State 0 
+    'lambda' -> 1
+  State 1 
+    ':' -> 2
+    varargslist -> 3
+  State 2 
+    test -> 4
+  State 3 
+    ':' -> 2
+  State 4 (final)
+Dump of NFA for lambdef_nocond
+  State 0 
+    'lambda' -> 1
+  State 1 
+    -> 2
+  State 2 
+    varargslist -> 3
+    -> 3
+  State 3 
+    -> 4
+  State 4 
+    ':' -> 5
+  State 5 
+    -> 6
+  State 6 
+    test_nocond -> 7
+  State 7 (final)
+Dump of DFA for lambdef_nocond
+  State 0 
+    'lambda' -> 1
+  State 1 
+    ':' -> 2
+    varargslist -> 3
+  State 2 
+    test_nocond -> 4
+  State 3 
+    ':' -> 2
+  State 4 (final)
+Dump of NFA for or_test
+  State 0 
+    and_test -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    'or' -> 3
+  State 3 
+    -> 4
+  State 4 
+    and_test -> 5
+  State 5 
+    -> 2
+Dump of DFA for or_test
+  State 0 
+    and_test -> 1
+  State 1 (final)
+    'or' -> 2
+  State 2 
+    and_test -> 1
+  State 3 (final)
+    'or' -> 2
+Dump of NFA for and_test
+  State 0 
+    not_test -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    'and' -> 3
+  State 3 
+    -> 4
+  State 4 
+    not_test -> 5
+  State 5 
+    -> 2
+Dump of DFA for and_test
+  State 0 
+    not_test -> 1
+  State 1 (final)
+    'and' -> 2
+  State 2 
+    not_test -> 1
+  State 3 (final)
+    'and' -> 2
+Dump of NFA for not_test
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    'not' -> 3
+  State 2 
+    comparison -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 
+    not_test -> 7
+  State 6 (final)
+  State 7 
+    -> 6
+Dump of DFA for not_test
+  State 0 
+    'not' -> 1
+    comparison -> 2
+  State 1 
+    not_test -> 2
+  State 2 (final)
+  State 3 (final)
+Dump of NFA for comparison
+  State 0 
+    expr -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    comp_op -> 3
+  State 3 
+    -> 4
+  State 4 
+    expr -> 5
+  State 5 
+    -> 2
+Dump of DFA for comparison
+  State 0 
+    expr -> 1
+  State 1 (final)
+    comp_op -> 2
+  State 2 
+    expr -> 1
+  State 3 (final)
+    comp_op -> 2
+Dump of NFA for comp_op
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+    -> 8
+    -> 9
+    -> 10
+    -> 11
+  State 1 
+    '<' -> 12
+  State 2 
+    '>' -> 13
+  State 3 
+    '==' -> 14
+  State 4 
+    '>=' -> 15
+  State 5 
+    '<=' -> 16
+  State 6 
+    '<>' -> 17
+  State 7 
+    '!=' -> 18
+  State 8 
+    'in' -> 19
+  State 9 
+    'not' -> 20
+  State 10 
+    'is' -> 21
+  State 11 
+    'is' -> 22
+  State 12 
+    -> 23
+  State 13 
+    -> 23
+  State 14 
+    -> 23
+  State 15 
+    -> 23
+  State 16 
+    -> 23
+  State 17 
+    -> 23
+  State 18 
+    -> 23
+  State 19 
+    -> 23
+  State 20 
+    -> 24
+  State 21 
+    -> 23
+  State 22 
+    -> 25
+  State 23 (final)
+  State 24 
+    'in' -> 26
+  State 25 
+    'not' -> 27
+  State 26 
+    -> 23
+  State 27 
+    -> 23
+Dump of DFA for comp_op
+  State 0 
+    '!=' -> 1
+    '<' -> 1
+    '<=' -> 1
+    '<>' -> 1
+    '==' -> 1
+    '>' -> 1
+    '>=' -> 1
+    'in' -> 1
+    'is' -> 9
+    'not' -> 10
+  State 1 (final)
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+  State 6 (final)
+  State 7 (final)
+  State 8 (final)
+  State 9 (final)
+    'not' -> 1
+  State 10 
+    'in' -> 1
+  State 11 (final)
+  State 12 (final)
+Dump of NFA for star_expr
+  State 0 
+    '*' -> 1
+  State 1 
+    -> 2
+  State 2 
+    expr -> 3
+  State 3 (final)
+Dump of DFA for star_expr
+  State 0 
+    '*' -> 1
+  State 1 
+    expr -> 2
+  State 2 (final)
+Dump of NFA for expr
+  State 0 
+    xor_expr -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    '|' -> 3
+  State 3 
+    -> 4
+  State 4 
+    xor_expr -> 5
+  State 5 
+    -> 2
+Dump of DFA for expr
+  State 0 
+    xor_expr -> 1
+  State 1 (final)
+    '|' -> 2
+  State 2 
+    xor_expr -> 1
+  State 3 (final)
+    '|' -> 2
+Dump of NFA for xor_expr
+  State 0 
+    and_expr -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    '^' -> 3
+  State 3 
+    -> 4
+  State 4 
+    and_expr -> 5
+  State 5 
+    -> 2
+Dump of DFA for xor_expr
+  State 0 
+    and_expr -> 1
+  State 1 (final)
+    '^' -> 2
+  State 2 
+    and_expr -> 1
+  State 3 (final)
+    '^' -> 2
+Dump of NFA for and_expr
+  State 0 
+    shift_expr -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    '&' -> 3
+  State 3 
+    -> 4
+  State 4 
+    shift_expr -> 5
+  State 5 
+    -> 2
+Dump of DFA for and_expr
+  State 0 
+    shift_expr -> 1
+  State 1 (final)
+    '&' -> 2
+  State 2 
+    shift_expr -> 1
+  State 3 (final)
+    '&' -> 2
+Dump of NFA for shift_expr
+  State 0 
+    arith_expr -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    -> 3
+    -> 4
+  State 3 
+    '<<' -> 5
+  State 4 
+    '>>' -> 6
+  State 5 
+    -> 7
+  State 6 
+    -> 7
+  State 7 
+    -> 8
+  State 8 
+    arith_expr -> 9
+  State 9 
+    -> 2
+Dump of DFA for shift_expr
+  State 0 
+    arith_expr -> 1
+  State 1 (final)
+    '<<' -> 2
+    '>>' -> 2
+  State 2 
+    arith_expr -> 1
+  State 3 
+    arith_expr -> 1
+  State 4 (final)
+    '<<' -> 2
+    '>>' -> 2
+Dump of NFA for arith_expr
+  State 0 
+    term -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    -> 3
+    -> 4
+  State 3 
+    '+' -> 5
+  State 4 
+    '-' -> 6
+  State 5 
+    -> 7
+  State 6 
+    -> 7
+  State 7 
+    -> 8
+  State 8 
+    term -> 9
+  State 9 
+    -> 2
+Dump of DFA for arith_expr
+  State 0 
+    term -> 1
+  State 1 (final)
+    '+' -> 2
+    '-' -> 2
+  State 2 
+    term -> 1
+  State 3 
+    term -> 1
+  State 4 (final)
+    '+' -> 2
+    '-' -> 2
+Dump of NFA for term
+  State 0 
+    factor -> 1
+  State 1 
+    -> 2
+  State 2 (final)
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+  State 3 
+    '*' -> 8
+  State 4 
+    '@' -> 9
+  State 5 
+    '/' -> 10
+  State 6 
+    '%' -> 11
+  State 7 
+    '//' -> 12
+  State 8 
+    -> 13
+  State 9 
+    -> 13
+  State 10 
+    -> 13
+  State 11 
+    -> 13
+  State 12 
+    -> 13
+  State 13 
+    -> 14
+  State 14 
+    factor -> 15
+  State 15 
+    -> 2
+Dump of DFA for term
+  State 0 
+    factor -> 1
+  State 1 (final)
+    '%' -> 2
+    '*' -> 2
+    '/' -> 2
+    '//' -> 2
+    '@' -> 2
+  State 2 
+    factor -> 1
+  State 3 
+    factor -> 1
+  State 4 
+    factor -> 1
+  State 5 
+    factor -> 1
+  State 6 
+    factor -> 1
+  State 7 (final)
+    '%' -> 2
+    '*' -> 2
+    '/' -> 2
+    '//' -> 2
+    '@' -> 2
+Dump of NFA for factor
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    -> 3
+    -> 4
+    -> 5
+  State 2 
+    power -> 6
+  State 3 
+    '+' -> 7
+  State 4 
+    '-' -> 8
+  State 5 
+    '~' -> 9
+  State 6 
+    -> 10
+  State 7 
+    -> 11
+  State 8 
+    -> 11
+  State 9 
+    -> 11
+  State 10 (final)
+  State 11 
+    -> 12
+  State 12 
+    factor -> 13
+  State 13 
+    -> 10
+Dump of DFA for factor
+  State 0 
+    '+' -> 1
+    '-' -> 1
+    '~' -> 1
+    power -> 4
+  State 1 
+    factor -> 4
+  State 2 
+    factor -> 4
+  State 3 
+    factor -> 4
+  State 4 (final)
+  State 5 (final)
+Dump of NFA for power
+  State 0 
+    atom_expr -> 1
+  State 1 
+    -> 2
+  State 2 
+    '**' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 (final)
+  State 5 
+    factor -> 4
+Dump of DFA for power
+  State 0 
+    atom_expr -> 1
+  State 1 (final)
+    '**' -> 2
+  State 2 
+    factor -> 3
+  State 3 (final)
+Dump of NFA for atom_expr
+  State 0 
+    AWAIT -> 1
+    -> 1
+  State 1 
+    -> 2
+  State 2 
+    atom -> 3
+  State 3 
+    -> 4
+  State 4 (final)
+    trailer -> 5
+  State 5 
+    -> 4
+Dump of DFA for atom_expr
+  State 0 
+    AWAIT -> 1
+    atom -> 2
+  State 1 
+    atom -> 2
+  State 2 (final)
+    trailer -> 2
+  State 3 (final)
+    trailer -> 2
+Dump of NFA for atom
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+    -> 6
+    -> 7
+    -> 8
+    -> 9
+    -> 10
+  State 1 
+    '(' -> 11
+  State 2 
+    '[' -> 12
+  State 3 
+    '{' -> 13
+  State 4 
+    NAME -> 14
+  State 5 
+    NUMBER -> 15
+  State 6 
+    STRING -> 16
+  State 7 
+    '...' -> 17
+  State 8 
+    'None' -> 18
+  State 9 
+    'True' -> 19
+  State 10 
+    'False' -> 20
+  State 11 
+    -> 21
+  State 12 
+    -> 22
+  State 13 
+    -> 23
+  State 14 
+    -> 24
+  State 15 
+    -> 24
+  State 16 
+    -> 6
+    -> 24
+  State 17 
+    -> 24
+  State 18 
+    -> 24
+  State 19 
+    -> 24
+  State 20 
+    -> 24
+  State 21 
+    -> 25
+    -> 26
+    -> 27
+  State 22 
+    testlist_comp -> 28
+    -> 28
+  State 23 
+    dictorsetmaker -> 29
+    -> 29
+  State 24 (final)
+  State 25 
+    yield_expr -> 30
+  State 26 
+    testlist_comp -> 31
+  State 27 
+    -> 32
+  State 28 
+    -> 33
+  State 29 
+    -> 34
+  State 30 
+    -> 27
+  State 31 
+    -> 27
+  State 32 
+    ')' -> 35
+  State 33 
+    ']' -> 36
+  State 34 
+    '}' -> 37
+  State 35 
+    -> 24
+  State 36 
+    -> 24
+  State 37 
+    -> 24
+Dump of DFA for atom
+  State 0 
+    '(' -> 1
+    '...' -> 2
+    'False' -> 2
+    'None' -> 2
+    'True' -> 2
+    '[' -> 6
+    '{' -> 7
+    NAME -> 2
+    NUMBER -> 2
+    STRING -> 10
+  State 1 
+    ')' -> 2
+    testlist_comp -> 12
+    yield_expr -> 12
+  State 2 (final)
+  State 3 (final)
+  State 4 (final)
+  State 5 (final)
+  State 6 
+    ']' -> 2
+    testlist_comp -> 15
+  State 7 
+    '}' -> 2
+    dictorsetmaker -> 17
+  State 8 (final)
+  State 9 (final)
+  State 10 (final)
+    STRING -> 10
+  State 11 (final)
+  State 12 
+    ')' -> 2
+  State 13 
+    ')' -> 2
+  State 14 (final)
+  State 15 
+    ']' -> 2
+  State 16 (final)
+  State 17 
+    '}' -> 2
+Dump of NFA for testlist_comp
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    namedexpr_test -> 3
+  State 2 
+    star_expr -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 
+    -> 6
+  State 6 
+    -> 7
+    -> 8
+  State 7 
+    comp_for -> 9
+  State 8 
+    ',' -> 10
+    -> 11
+  State 9 
+    -> 12
+  State 10 
+    -> 13
+  State 11 
+    ',' -> 14
+    -> 14
+  State 12 (final)
+  State 13 
+    -> 15
+    -> 16
+  State 14 
+    -> 12
+  State 15 
+    namedexpr_test -> 17
+  State 16 
+    star_expr -> 18
+  State 17 
+    -> 19
+  State 18 
+    -> 19
+  State 19 
+    -> 8
+Dump of DFA for testlist_comp
+  State 0 
+    namedexpr_test -> 1
+    star_expr -> 1
+  State 1 (final)
+    ',' -> 3
+    comp_for -> 4
+  State 2 (final)
+    ',' -> 3
+    comp_for -> 4
+  State 3 (final)
+    namedexpr_test -> 5
+    star_expr -> 5
+  State 4 (final)
+  State 5 (final)
+    ',' -> 3
+  State 6 (final)
+    ',' -> 3
+Dump of NFA for trailer
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+  State 1 
+    '(' -> 4
+  State 2 
+    '[' -> 5
+  State 3 
+    '.' -> 6
+  State 4 
+    -> 7
+  State 5 
+    -> 8
+  State 6 
+    -> 9
+  State 7 
+    arglist -> 10
+    -> 10
+  State 8 
+    subscriptlist -> 11
+  State 9 
+    NAME -> 12
+  State 10 
+    -> 13
+  State 11 
+    -> 14
+  State 12 
+    -> 15
+  State 13 
+    ')' -> 16
+  State 14 
+    ']' -> 17
+  State 15 (final)
+  State 16 
+    -> 15
+  State 17 
+    -> 15
+Dump of DFA for trailer
+  State 0 
+    '(' -> 1
+    '.' -> 2
+    '[' -> 3
+  State 1 
+    ')' -> 4
+    arglist -> 5
+  State 2 
+    NAME -> 4
+  State 3 
+    subscriptlist -> 7
+  State 4 (final)
+  State 5 
+    ')' -> 4
+  State 6 (final)
+  State 7 
+    ']' -> 4
+  State 8 (final)
+Dump of NFA for subscriptlist
+  State 0 
+    subscript -> 1
+  State 1 
+    -> 2
+  State 2 
+    ',' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    ',' -> 6
+    -> 6
+  State 5 
+    subscript -> 7
+  State 6 (final)
+  State 7 
+    -> 2
+Dump of DFA for subscriptlist
+  State 0 
+    subscript -> 1
+  State 1 (final)
+    ',' -> 2
+  State 2 (final)
+    subscript -> 1
+  State 3 (final)
+    ',' -> 2
+Dump of NFA for subscript
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    test -> 3
+  State 2 
+    test -> 4
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 (final)
+  State 6 
+    ':' -> 7
+  State 7 
+    -> 8
+  State 8 
+    test -> 9
+    -> 9
+  State 9 
+    -> 10
+  State 10 
+    sliceop -> 11
+    -> 11
+  State 11 
+    -> 5
+Dump of DFA for subscript
+  State 0 
+    ':' -> 1
+    test -> 2
+  State 1 (final)
+    sliceop -> 3
+    test -> 4
+  State 2 (final)
+    ':' -> 1
+  State 3 (final)
+  State 4 (final)
+    sliceop -> 3
+Dump of NFA for sliceop
+  State 0 
+    ':' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test -> 3
+    -> 3
+  State 3 (final)
+Dump of DFA for sliceop
+  State 0 
+    ':' -> 1
+  State 1 (final)
+    test -> 2
+  State 2 (final)
+Dump of NFA for exprlist
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    expr -> 3
+  State 2 
+    star_expr -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 
+    -> 6
+  State 6 
+    ',' -> 7
+    -> 8
+  State 7 
+    -> 9
+  State 8 
+    ',' -> 10
+    -> 10
+  State 9 
+    -> 11
+    -> 12
+  State 10 (final)
+  State 11 
+    expr -> 13
+  State 12 
+    star_expr -> 14
+  State 13 
+    -> 15
+  State 14 
+    -> 15
+  State 15 
+    -> 6
+Dump of DFA for exprlist
+  State 0 
+    expr -> 1
+    star_expr -> 1
+  State 1 (final)
+    ',' -> 3
+  State 2 (final)
+    ',' -> 3
+  State 3 (final)
+    expr -> 1
+    star_expr -> 1
+  State 4 (final)
+    ',' -> 3
+  State 5 (final)
+    ',' -> 3
+Dump of NFA for testlist
+  State 0 
+    test -> 1
+  State 1 
+    -> 2
+  State 2 
+    ',' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    ',' -> 6
+    -> 6
+  State 5 
+    test -> 7
+  State 6 (final)
+  State 7 
+    -> 2
+Dump of DFA for testlist
+  State 0 
+    test -> 1
+  State 1 (final)
+    ',' -> 2
+  State 2 (final)
+    test -> 1
+  State 3 (final)
+    ',' -> 2
+Dump of NFA for dictorsetmaker
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    -> 3
+    -> 4
+  State 2 
+    -> 5
+    -> 6
+  State 3 
+    test -> 7
+  State 4 
+    '**' -> 8
+  State 5 
+    test -> 9
+  State 6 
+    star_expr -> 10
+  State 7 
+    -> 11
+  State 8 
+    -> 12
+  State 9 
+    -> 13
+  State 10 
+    -> 13
+  State 11 
+    ':' -> 14
+  State 12 
+    expr -> 15
+  State 13 
+    -> 16
+  State 14 
+    -> 17
+  State 15 
+    -> 18
+  State 16 
+    -> 19
+    -> 20
+  State 17 
+    test -> 21
+  State 18 
+    -> 22
+  State 19 
+    comp_for -> 23
+  State 20 
+    ',' -> 24
+    -> 25
+  State 21 
+    -> 18
+  State 22 
+    -> 26
+    -> 27
+  State 23 
+    -> 28
+  State 24 
+    -> 29
+  State 25 
+    ',' -> 30
+    -> 30
+  State 26 
+    comp_for -> 31
+  State 27 
+    ',' -> 32
+    -> 33
+  State 28 
+    -> 34
+  State 29 
+    -> 35
+    -> 36
+  State 30 
+    -> 28
+  State 31 
+    -> 37
+  State 32 
+    -> 38
+  State 33 
+    ',' -> 39
+    -> 39
+  State 34 (final)
+  State 35 
+    test -> 40
+  State 36 
+    star_expr -> 41
+  State 37 
+    -> 34
+  State 38 
+    -> 42
+    -> 43
+  State 39 
+    -> 37
+  State 40 
+    -> 44
+  State 41 
+    -> 44
+  State 42 
+    test -> 45
+  State 43 
+    '**' -> 46
+  State 44 
+    -> 20
+  State 45 
+    -> 47
+  State 46 
+    -> 48
+  State 47 
+    ':' -> 49
+  State 48 
+    expr -> 50
+  State 49 
+    -> 51
+  State 50 
+    -> 52
+  State 51 
+    test -> 53
+  State 52 
+    -> 27
+  State 53 
+    -> 52
+Dump of DFA for dictorsetmaker
+  State 0 
+    '**' -> 1
+    star_expr -> 2
+    test -> 3
+  State 1 
+    expr -> 4
+  State 2 (final)
+    ',' -> 5
+    comp_for -> 6
+  State 3 (final)
+    ',' -> 5
+    ':' -> 7
+    comp_for -> 6
+  State 4 (final)
+    ',' -> 8
+    comp_for -> 6
+  State 5 (final)
+    star_expr -> 10
+    test -> 10
+  State 6 (final)
+  State 7 
+    test -> 4
+  State 8 (final)
+    '**' -> 13
+    test -> 14
+  State 9 (final)
+  State 10 (final)
+    ',' -> 5
+  State 11 (final)
+    ',' -> 5
+  State 12 (final)
+    ',' -> 8
+    comp_for -> 6
+  State 13 
+    expr -> 15
+  State 14 
+    ':' -> 16
+  State 15 (final)
+    ',' -> 8
+  State 16 
+    test -> 15
+  State 17 (final)
+    ',' -> 8
+Dump of NFA for classdef
+  State 0 
+    'class' -> 1
+  State 1 
+    -> 2
+  State 2 
+    NAME -> 3
+  State 3 
+    -> 4
+  State 4 
+    '(' -> 5
+    -> 6
+  State 5 
+    -> 7
+  State 6 
+    -> 8
+  State 7 
+    arglist -> 9
+    -> 9
+  State 8 
+    ':' -> 10
+  State 9 
+    -> 11
+  State 10 
+    -> 12
+  State 11 
+    ')' -> 6
+  State 12 
+    suite -> 13
+  State 13 (final)
+Dump of DFA for classdef
+  State 0 
+    'class' -> 1
+  State 1 
+    NAME -> 2
+  State 2 
+    '(' -> 3
+    ':' -> 4
+  State 3 
+    ')' -> 5
+    arglist -> 6
+  State 4 
+    suite -> 7
+  State 5 
+    ':' -> 4
+  State 6 
+    ')' -> 5
+  State 7 (final)
+Dump of NFA for arglist
+  State 0 
+    argument -> 1
+  State 1 
+    -> 2
+  State 2 
+    ',' -> 3
+    -> 4
+  State 3 
+    -> 5
+  State 4 
+    ',' -> 6
+    -> 6
+  State 5 
+    argument -> 7
+  State 6 (final)
+  State 7 
+    -> 2
+Dump of DFA for arglist
+  State 0 
+    argument -> 1
+  State 1 (final)
+    ',' -> 2
+  State 2 (final)
+    argument -> 1
+  State 3 (final)
+    ',' -> 2
+Dump of NFA for argument
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+    -> 4
+    -> 5
+  State 1 
+    test -> 6
+  State 2 
+    test -> 7
+  State 3 
+    test -> 8
+  State 4 
+    '**' -> 9
+  State 5 
+    '*' -> 10
+  State 6 
+    -> 11
+  State 7 
+    -> 12
+  State 8 
+    -> 13
+  State 9 
+    -> 14
+  State 10 
+    -> 15
+  State 11 
+    comp_for -> 16
+    -> 16
+  State 12 
+    ':=' -> 17
+  State 13 
+    '=' -> 18
+  State 14 
+    test -> 19
+  State 15 
+    test -> 20
+  State 16 
+    -> 21
+  State 17 
+    -> 22
+  State 18 
+    -> 23
+  State 19 
+    -> 21
+  State 20 
+    -> 21
+  State 21 (final)
+  State 22 
+    test -> 24
+  State 23 
+    test -> 25
+  State 24 
+    -> 21
+  State 25 
+    -> 21
+Dump of DFA for argument
+  State 0 
+    '*' -> 1
+    '**' -> 2
+    test -> 3
+  State 1 
+    test -> 4
+  State 2 
+    test -> 4
+  State 3 (final)
+    ':=' -> 6
+    '=' -> 7
+    comp_for -> 4
+  State 4 (final)
+  State 5 (final)
+  State 6 
+    test -> 4
+  State 7 
+    test -> 4
+  State 8 (final)
+  State 9 (final)
+  State 10 (final)
+Dump of NFA for comp_iter
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    comp_for -> 3
+  State 2 
+    comp_if -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 5
+  State 5 (final)
+Dump of DFA for comp_iter
+  State 0 
+    comp_for -> 1
+    comp_if -> 1
+  State 1 (final)
+  State 2 (final)
+Dump of NFA for sync_comp_for
+  State 0 
+    'for' -> 1
+  State 1 
+    -> 2
+  State 2 
+    exprlist -> 3
+  State 3 
+    -> 4
+  State 4 
+    'in' -> 5
+  State 5 
+    -> 6
+  State 6 
+    or_test -> 7
+  State 7 
+    -> 8
+  State 8 
+    comp_iter -> 9
+    -> 9
+  State 9 (final)
+Dump of DFA for sync_comp_for
+  State 0 
+    'for' -> 1
+  State 1 
+    exprlist -> 2
+  State 2 
+    'in' -> 3
+  State 3 
+    or_test -> 4
+  State 4 (final)
+    comp_iter -> 5
+  State 5 (final)
+Dump of NFA for comp_for
+  State 0 
+    ASYNC -> 1
+    -> 1
+  State 1 
+    -> 2
+  State 2 
+    sync_comp_for -> 3
+  State 3 (final)
+Dump of DFA for comp_for
+  State 0 
+    ASYNC -> 1
+    sync_comp_for -> 2
+  State 1 
+    sync_comp_for -> 2
+  State 2 (final)
+Dump of NFA for comp_if
+  State 0 
+    'if' -> 1
+  State 1 
+    -> 2
+  State 2 
+    test_nocond -> 3
+  State 3 
+    -> 4
+  State 4 
+    comp_iter -> 5
+    -> 5
+  State 5 (final)
+Dump of DFA for comp_if
+  State 0 
+    'if' -> 1
+  State 1 
+    test_nocond -> 2
+  State 2 (final)
+    comp_iter -> 3
+  State 3 (final)
+Dump of NFA for encoding_decl
+  State 0 
+    NAME -> 1
+  State 1 (final)
+Dump of DFA for encoding_decl
+  State 0 
+    NAME -> 1
+  State 1 (final)
+Dump of NFA for yield_expr
+  State 0 
+    'yield' -> 1
+  State 1 
+    -> 2
+  State 2 
+    yield_arg -> 3
+    -> 3
+  State 3 (final)
+Dump of DFA for yield_expr
+  State 0 
+    'yield' -> 1
+  State 1 (final)
+    yield_arg -> 2
+  State 2 (final)
+Dump of NFA for yield_arg
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    'from' -> 3
+  State 2 
+    testlist_star_expr -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 
+    test -> 7
+  State 6 (final)
+  State 7 
+    -> 6
+Dump of DFA for yield_arg
+  State 0 
+    'from' -> 1
+    testlist_star_expr -> 2
+  State 1 
+    test -> 2
+  State 2 (final)
+  State 3 (final)
+Dump of NFA for func_body_suite
+  State 0 
+    -> 1
+    -> 2
+  State 1 
+    simple_stmt -> 3
+  State 2 
+    NEWLINE -> 4
+  State 3 
+    -> 5
+  State 4 
+    -> 6
+  State 5 (final)
+  State 6 
+    TYPE_COMMENT -> 7
+    -> 8
+  State 7 
+    -> 9
+  State 8 
+    -> 10
+  State 9 
+    NEWLINE -> 8
+  State 10 
+    INDENT -> 11
+  State 11 
+    -> 12
+  State 12 
+    stmt -> 13
+  State 13 
+    -> 12
+    -> 14
+  State 14 
+    DEDENT -> 15
+  State 15 
+    -> 5
+Dump of DFA for func_body_suite
+  State 0 
+    NEWLINE -> 1
+    simple_stmt -> 2
+  State 1 
+    INDENT -> 3
+    TYPE_COMMENT -> 4
+  State 2 (final)
+  State 3 
+    stmt -> 5
+  State 4 
+    NEWLINE -> 6
+  State 5 
+    DEDENT -> 2
+    stmt -> 5
+  State 6 
+    INDENT -> 3
+  State 7 (final)
+Dump of NFA for func_type_input
+  State 0 
+    func_type -> 1
+  State 1 
+    -> 2
+  State 2 
+    NEWLINE -> 3
+    -> 4
+  State 3 
+    -> 2
+  State 4 
+    ENDMARKER -> 5
+  State 5 (final)
+Dump of DFA for func_type_input
+  State 0 
+    func_type -> 1
+  State 1 
+    ENDMARKER -> 2
+    NEWLINE -> 1
+  State 2 (final)
+  State 3 
+    ENDMARKER -> 2
+    NEWLINE -> 1
+Dump of NFA for func_type
+  State 0 
+    '(' -> 1
+  State 1 
+    -> 2
+  State 2 
+    typelist -> 3
+    -> 3
+  State 3 
+    -> 4
+  State 4 
+    ')' -> 5
+  State 5 
+    -> 6
+  State 6 
+    '->' -> 7
+  State 7 
+    -> 8
+  State 8 
+    test -> 9
+  State 9 (final)
+Dump of DFA for func_type
+  State 0 
+    '(' -> 1
+  State 1 
+    ')' -> 2
+    typelist -> 3
+  State 2 
+    '->' -> 4
+  State 3 
+    ')' -> 2
+  State 4 
+    test -> 5
+  State 5 (final)
+Dump of NFA for typelist
+  State 0 
+    -> 1
+    -> 2
+    -> 3
+  State 1 
+    test -> 4
+  State 2 
+    '*' -> 5
+  State 3 
+    '**' -> 6
+  State 4 
+    -> 7
+  State 5 
+    -> 8
+  State 6 
+    -> 9
+  State 7 
+    ',' -> 10
+    -> 11
+  State 8 
+    test -> 12
+    -> 12
+  State 9 
+    test -> 13
+  State 10 
+    -> 14
+  State 11 
+    ',' -> 15
+    -> 16
+  State 12 
+    -> 17
+  State 13 
+    -> 18
+  State 14 
+    test -> 19
+  State 15 
+    -> 20
+  State 16 
+    -> 18
+  State 17 
+    ',' -> 21
+    -> 22
+  State 18 (final)
+  State 19 
+    -> 7
+  State 20 
+    -> 23
+    -> 24
+    -> 16
+  State 21 
+    -> 25
+  State 22 
+    ',' -> 26
+    -> 27
+  State 23 
+    '*' -> 28
+  State 24 
+    '**' -> 29
+  State 25 
+    test -> 30
+  State 26 
+    -> 31
+  State 27 
+    -> 18
+  State 28 
+    -> 32
+  State 29 
+    -> 33
+  State 30 
+    -> 17
+  State 31 
+    '**' -> 34
+  State 32 
+    test -> 35
+    -> 35
+  State 33 
+    test -> 36
+  State 34 
+    -> 37
+  State 35 
+    -> 38
+  State 36 
+    -> 16
+  State 37 
+    test -> 27
+  State 38 
+    ',' -> 39
+    -> 40
+  State 39 
+    -> 41
+  State 40 
+    ',' -> 42
+    -> 43
+  State 41 
+    test -> 44
+  State 42 
+    -> 45
+  State 43 
+    -> 16
+  State 44 
+    -> 38
+  State 45 
+    '**' -> 46
+  State 46 
+    -> 47
+  State 47 
+    test -> 43
+Dump of DFA for typelist
+  State 0 
+    '*' -> 1
+    '**' -> 2
+    test -> 3
+  State 1 (final)
+    ',' -> 4
+    test -> 5
+  State 2 
+    test -> 6
+  State 3 (final)
+    ',' -> 7
+  State 4 
+    '**' -> 8
+    test -> 5
+  State 5 (final)
+    ',' -> 4
+  State 6 (final)
+  State 7 (final)
+    '*' -> 10
+    '**' -> 11
+    test -> 3
+  State 8 
+    test -> 6
+  State 9 (final)
+    ',' -> 4
+  State 10 (final)
+    ',' -> 14
+    test -> 15
+  State 11 
+    test -> 6
+  State 12 (final)
+    ',' -> 7
+  State 13 (final)
+  State 14 
+    '**' -> 17
+    test -> 15
+  State 15 (final)
+    ',' -> 14
+  State 16 (final)
+  State 17 
+    test -> 6
+  State 18 (final)
+    ',' -> 14
+  State 19 (final)
+First set for single_input
+    - 'return'
+    - '...'
+    - 'class'
+    - '('
+    - 'False'
+    - 'global'
+    - '@'
+    - 'with'
+    - 'from'
+    - 'nonlocal'
+    - 'continue'
+    - 'while'
+    - AWAIT
+    - 'try'
+    - 'not'
+    - NAME
+    - STRING
+    - '['
+    - 'raise'
+    - 'yield'
+    - NEWLINE
+    - NUMBER
+    - 'True'
+    - '+'
+    - 'def'
+    - '*'
+    - 'None'
+    - 'assert'
+    - '{'
+    - ASYNC
+    - 'lambda'
+    - 'break'
+    - '-'
+    - 'if'
+    - 'del'
+    - 'import'
+    - '~'
+    - 'pass'
+    - 'for'
+First set for file_input
+    - 'return'
+    - ENDMARKER
+    - '...'
+    - 'class'
+    - '('
+    - 'False'
+    - 'global'
+    - '@'
+    - 'with'
+    - 'from'
+    - 'nonlocal'
+    - 'continue'
+    - 'while'
+    - AWAIT
+    - 'try'
+    - 'not'
+    - NAME
+    - STRING
+    - '['
+    - 'raise'
+    - 'yield'
+    - NEWLINE
+    - NUMBER
+    - 'True'
+    - '+'
+    - 'def'
+    - '*'
+    - 'None'
+    - 'assert'
+    - '{'
+    - ASYNC
+    - 'lambda'
+    - 'break'
+    - '-'
+    - 'if'
+    - 'del'
+    - 'import'
+    - '~'
+    - 'pass'
+    - 'for'
+First set for eval_input
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for decorator
+    - '@'
+First set for decorators
+    - '@'
+First set for decorated
+    - '@'
+First set for async_funcdef
+    - ASYNC
+First set for funcdef
+    - 'def'
+First set for parameters
+    - '('
+First set for typedargslist
+    - NAME
+    - '*'
+    - '**'
+First set for tfpdef
+    - NAME
+First set for varargslist
+    - NAME
+    - '*'
+    - '**'
+First set for vfpdef
+    - NAME
+First set for stmt
+    - 'return'
+    - '...'
+    - 'class'
+    - '('
+    - 'False'
+    - 'global'
+    - '@'
+    - 'with'
+    - 'from'
+    - 'nonlocal'
+    - 'continue'
+    - 'while'
+    - AWAIT
+    - 'try'
+    - 'not'
+    - NAME
+    - STRING
+    - '['
+    - 'raise'
+    - 'yield'
+    - NUMBER
+    - 'True'
+    - '+'
+    - 'def'
+    - '*'
+    - 'None'
+    - 'assert'
+    - '{'
+    - ASYNC
+    - 'lambda'
+    - 'break'
+    - '-'
+    - 'if'
+    - 'del'
+    - 'import'
+    - '~'
+    - 'pass'
+    - 'for'
+First set for simple_stmt
+    - 'return'
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'global'
+    - '*'
+    - 'None'
+    - 'assert'
+    - 'from'
+    - 'nonlocal'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - 'break'
+    - '-'
+    - 'continue'
+    - 'not'
+    - 'del'
+    - NAME
+    - STRING
+    - 'import'
+    - '~'
+    - '['
+    - 'pass'
+    - 'raise'
+    - 'yield'
+First set for small_stmt
+    - 'return'
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'global'
+    - '*'
+    - 'None'
+    - 'assert'
+    - 'from'
+    - 'nonlocal'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - 'break'
+    - '-'
+    - 'continue'
+    - 'not'
+    - 'del'
+    - NAME
+    - STRING
+    - 'import'
+    - '~'
+    - '['
+    - 'pass'
+    - 'raise'
+    - 'yield'
+First set for expr_stmt
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for annassign
+    - ':'
+First set for testlist_star_expr
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for augassign
+    - '*='
+    - '>>='
+    - '&='
+    - '**='
+    - '%='
+    - '<<='
+    - '-='
+    - '+='
+    - '|='
+    - '@='
+    - '//='
+    - '^='
+    - '/='
+First set for del_stmt
+    - 'del'
+First set for pass_stmt
+    - 'pass'
+First set for flow_stmt
+    - 'return'
+    - 'break'
+    - 'continue'
+    - 'raise'
+    - 'yield'
+First set for break_stmt
+    - 'break'
+First set for continue_stmt
+    - 'continue'
+First set for return_stmt
+    - 'return'
+First set for yield_stmt
+    - 'yield'
+First set for raise_stmt
+    - 'raise'
+First set for import_stmt
+    - 'from'
+    - 'import'
+First set for import_name
+    - 'import'
+First set for import_from
+    - 'from'
+First set for import_as_name
+    - NAME
+First set for dotted_as_name
+    - NAME
+First set for import_as_names
+    - NAME
+First set for dotted_as_names
+    - NAME
+First set for dotted_name
+    - NAME
+First set for global_stmt
+    - 'global'
+First set for nonlocal_stmt
+    - 'nonlocal'
+First set for assert_stmt
+    - 'assert'
+First set for compound_stmt
+    - 'if'
+    - ASYNC
+    - 'def'
+    - 'with'
+    - 'while'
+    - 'class'
+    - '@'
+    - 'try'
+    - 'for'
+First set for async_stmt
+    - ASYNC
+First set for if_stmt
+    - 'if'
+First set for while_stmt
+    - 'while'
+First set for for_stmt
+    - 'for'
+First set for try_stmt
+    - 'try'
+First set for with_stmt
+    - 'with'
+First set for with_item
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for except_clause
+    - 'except'
+First set for suite
+    - 'return'
+    - NEWLINE
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'global'
+    - '*'
+    - 'None'
+    - 'assert'
+    - 'from'
+    - 'nonlocal'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - 'break'
+    - '-'
+    - 'continue'
+    - 'not'
+    - 'del'
+    - NAME
+    - STRING
+    - 'import'
+    - '~'
+    - '['
+    - 'pass'
+    - 'raise'
+    - 'yield'
+First set for namedexpr_test
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for test
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for test_nocond
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for lambdef
+    - 'lambda'
+First set for lambdef_nocond
+    - 'lambda'
+First set for or_test
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'not'
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for and_test
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'not'
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for not_test
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'not'
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for comparison
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for comp_op
+    - 'is'
+    - 'in'
+    - '>='
+    - '!='
+    - 'not'
+    - '<='
+    - '<'
+    - '<>'
+    - '>'
+    - '=='
+First set for star_expr
+    - '*'
+First set for expr
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for xor_expr
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for and_expr
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for shift_expr
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for arith_expr
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for term
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for factor
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for power
+    - AWAIT
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - STRING
+    - 'False'
+    - 'None'
+    - '['
+    - '{'
+First set for atom_expr
+    - AWAIT
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - STRING
+    - 'False'
+    - 'None'
+    - '['
+    - '{'
+First set for atom
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - STRING
+    - 'False'
+    - 'None'
+    - '['
+    - '{'
+First set for testlist_comp
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for trailer
+    - '.'
+    - '('
+    - '['
+First set for subscriptlist
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - ':'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for subscript
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - ':'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for sliceop
+    - ':'
+First set for exprlist
+    - AWAIT
+    - '...'
+    - '-'
+    - NUMBER
+    - 'True'
+    - '('
+    - NAME
+    - '+'
+    - STRING
+    - 'False'
+    - '*'
+    - '~'
+    - 'None'
+    - '['
+    - '{'
+First set for testlist
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for dictorsetmaker
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+    - '**'
+First set for classdef
+    - 'class'
+First set for arglist
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+    - '**'
+First set for argument
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+    - '**'
+First set for comp_iter
+    - 'if'
+    - ASYNC
+    - 'for'
+First set for sync_comp_for
+    - 'for'
+First set for comp_for
+    - ASYNC
+    - 'for'
+First set for comp_if
+    - 'if'
+First set for encoding_decl
+    - NAME
+First set for yield_expr
+    - 'yield'
+First set for yield_arg
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - 'from'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+First set for func_body_suite
+    - 'return'
+    - NEWLINE
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - 'global'
+    - '*'
+    - 'None'
+    - 'assert'
+    - 'from'
+    - 'nonlocal'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - 'break'
+    - '-'
+    - 'continue'
+    - 'not'
+    - 'del'
+    - NAME
+    - STRING
+    - 'import'
+    - '~'
+    - '['
+    - 'pass'
+    - 'raise'
+    - 'yield'
+First set for func_type_input
+    - '('
+First set for func_type
+    - '('
+First set for typelist
+    - '...'
+    - NUMBER
+    - 'True'
+    - '('
+    - '+'
+    - 'False'
+    - '*'
+    - 'None'
+    - '{'
+    - 'lambda'
+    - AWAIT
+    - '-'
+    - 'not'
+    - NAME
+    - STRING
+    - '~'
+    - '['
+    - '**'
+
+Grammar summary
+===============
+- 183 labels
+- 92 dfas
+- 57 tokens
+- 33 keywords
+- Start symbol: single_input
