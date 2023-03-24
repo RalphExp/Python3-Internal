@@ -173,7 +173,8 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
 * 1 compute the closure state of the start state
 * 2 put the closure state into a list
 * 3 for every closure state in the list, find all the different labels that will lead to the next state, also compute the closure state of these states
-* 4 from the above computation, if the closure state is not in the list, put it into the list and repeat 3
+* 4 from the current closure state, for each label, add an arc to the new closure state computed in step 3
+* 5 from the above computation, if the closure state is not in the list, put it into the list and repeat step 3
 
 ```python
     @classmethod
