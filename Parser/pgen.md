@@ -213,7 +213,7 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
 ```
 
 DFA also use a simplify method to reduce the number DFAState, simplify compares every pair of DFAState,
-if they are *equal*, they can be combined together. Equal means the __eq__ function returns True
+if they are *equal*, they can be combined together. Equal means the \_\_eq\_\_ function returns True
 ``` python
 class DFAState(object):
     ...
