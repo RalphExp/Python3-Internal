@@ -173,16 +173,20 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
 * 1 compute the closure state of the start state
 * 2 put the closure state into a list
 * 3 for every closure state in the list, find all the different labels that will lead to the next state, also compute the closure state of these states
-* 4 from the current closure state, for each label, add an arc to the new closure state computed in step 3
-* 5 from the above computation, if the closure state is not in the list, put it into the list and repeat step 3
+* 4 from the above computation, if the closure state is not in the list, put it into the list
+* 5 from the current closure state, for each label, add an arc to the new closure state computed in step 3
+* 6 repeat step 3 until all the closure state in the list have been processed.
 
 ```python
     @classmethod
     def from_nfa(cls, nfa):
-        ...
+        # step1: 
         add_closure(nfa.start, base_nfa_set)
+        
+        # step2:
         states = [DFAState(nfa.name, base_nfa_set, nfa.end)]
-        ...
+        
+        # step3:
         for state in states:
             arcs = {}
             for nfa_state in state.nfa_set:
@@ -191,6 +195,7 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
                         nfa_set = arcs.setdefault(nfa_arc.label, set())
                         add_closure(nfa_arc.target, nfa_set)
 
+            # step3: different labels lead to the new closure (nfa_set)
             for label, nfa_set in sorted(arcs.items()):
                 for exisisting_state in states:
                     if exisisting_state.nfa_set == nfa_set:
@@ -198,8 +203,10 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
                         break
                 else:
                     next_state = DFAState(nfa.name, nfa_set, nfa.end)
+                    # step4: add new state to list
                     states.append(next_state)
 
+                # step5: add new arc
                 state.add_arc(next_state, label)
 
         return cls(nfa.name, states)
