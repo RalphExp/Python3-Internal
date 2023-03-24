@@ -203,3 +203,24 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
 
         return cls(nfa.name, states)
 ```
+
+DFA also use a simplify method to reduce the number DFAState, simplify compares every pair of DFAState,
+if they are *equal*, they can be combined together. Equal means the __eq__ function returns True
+``` python
+class DFAState(object):
+    ...
+    
+    def __eq__(self, other):
+        # The nfa_set does not matter for equality
+        assert isinstance(other, DFAState)
+        if self.is_final != other.is_final:
+            return False
+        # We cannot just return self.arcs == other.arcs because that
+        # would invoke this method recursively if there are any cycles.
+        if len(self.arcs) != len(other.arcs):
+            return False
+        for label, next_ in self.arcs.items():
+            if next_ is not other.arcs.get(label):
+                return False
+        return True
+```
