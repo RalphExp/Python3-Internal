@@ -168,3 +168,38 @@ the output looks like the following, note that State 0 use three epsilon transit
   State 9 
     -> 7
 ```
+
+then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is simple:
+* 1 compute the closure state of the start state
+* 2 put the closure state into a list
+* 3 for every closure state in the list, find all the different labels that will lead to the next * state, also compute the closure state of these states
+* 4 from the above computation, if the closure state is not in the list, put it into the list and repeat 3
+
+```python
+    @classmethod
+    def from_nfa(cls, nfa):
+        ...
+        add_closure(nfa.start, base_nfa_set)
+        states = [DFAState(nfa.name, base_nfa_set, nfa.end)]
+        ...
+        for state in states:
+            arcs = {}
+            for nfa_state in state.nfa_set:
+                for nfa_arc in nfa_state.arcs:
+                    if nfa_arc.label is not None:
+                        nfa_set = arcs.setdefault(nfa_arc.label, set())
+                        add_closure(nfa_arc.target, nfa_set)
+
+            for label, nfa_set in sorted(arcs.items()):
+                for exisisting_state in states:
+                    if exisisting_state.nfa_set == nfa_set:
+                        next_state = exisisting_state
+                        break
+                else:
+                    next_state = DFAState(nfa.name, nfa_set, nfa.end)
+                    states.append(next_state)
+
+                state.add_arc(next_state, label)
+
+        return cls(nfa.name, states)
+```
