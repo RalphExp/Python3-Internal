@@ -212,8 +212,12 @@ then pgen use ```DFA.from_nfa(nfa)``` to convert the NFA into DFA, the idea is s
         return cls(nfa.name, states)
 ```
 
-DFA also use a simplify method to reduce the number DFAState, simplify compares every pair of DFAState,
-if they are *equal*, they can be combined together. Equal means the \_\_eq\_\_ function returns True
+DFA also use a simplify method to reduce the number DFAState, simplify compares every pair of DFAState, if they are *equal*, they can be combined together. Equal means the \_\_eq\_\_ function returns True.
+
+* The two state must be both the accept state or not the accept state.
+* The two state must have the same number of arcs.
+* For each arc in state1 there must be an arc in state2 that these 2 arcs have the same label and the same target.
+
 ``` python
 class DFAState(object):
     ...
