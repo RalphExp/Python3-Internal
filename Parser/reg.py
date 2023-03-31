@@ -12,17 +12,21 @@ class Token(object):
     STAR2 = 5
     PLUS = 6
     PLUS2 = 7
-    QUESTION = 8
-    CHAR = 9
+    QUEST = 8
+    QUEST2 = 9
     LBRACK = 10
     RBRACK = 11
     BACKSLASH = 12
     LBRACE = 13
     RBRACE = 14
+    CHAR = 15
 
     def __init__(self, type, value=None):
         self.type = type
         self.value = value
+
+    def __repr__(self) -> str:
+        return f'token: type = {self.type}, val = {self.value}'
 
 class Tokenizer(object):
 
@@ -32,21 +36,22 @@ class Tokenizer(object):
         self._index = 0
 
         self._token_dict = {
-            '|': Token(Token.ALTER),
-            '(': Token(Token.LPAREN),
-            ')': Token(Token.RPAREN),
-            '[': Token(Token.LBRACK),
-            ']': Token(Token.RBRACK),
-            '{': Token(Token.LBRACE),
-            '}': Token(Token.RBRACE),
-            '*': Token(Token.STAR),
-            '+': Token(Token.PLUS),
-            '?': Token(Token.QUESTION),
+            '|': Token(Token.ALTER, '|'),
+            '(': Token(Token.LPAREN, '('),
+            ')': Token(Token.RPAREN, ')'),
+            '[': Token(Token.LBRACK, '['),
+            ']': Token(Token.RBRACK, ']'),
+            '{': Token(Token.LBRACE, '{'),
+            '}': Token(Token.RBRACE, '}'),
+            '*': Token(Token.STAR, '*'),
+            '+': Token(Token.PLUS, '+'),
+            '?': Token(Token.QUEST, '?'),
         }
 
         self._token2_dict = {
-            '*?': Token(Token.STAR2),
-            '+?': Token(Token.PLUS2)
+            '*?': Token(Token.STAR2, '*?'),
+            '+?': Token(Token.PLUS2, '+?'),
+            '??': Token(Token.QUEST2, '??')
         }
 
     def putToken(self, token):
@@ -131,6 +136,10 @@ class NFAState(object):
     def addArc(self, target, value, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
+    def prependArc(self, target, value, type_):
+        assert(len(self._arcs) == 1)
+        self._arcs.insert(0, NFAArc(target, value, type_))
+
     def copy(self, state2):
         self._arcs = state2._arc
         self.accept = state2.accept
@@ -198,7 +207,7 @@ class RegExp(object):
         aa = None # NFA State to return
         zz = None # NFA State to return
 
-        # !!! invariant feature: len(zz._arc) == 0
+        # invariant property: len(zz._arc) == 0
         while True:
             token = self.getToken()
             if token.type == Token.LPAREN:
@@ -226,20 +235,56 @@ class RegExp(object):
                 a, z = self.concat()
                 token = self.getToken()
                 if token.type == Token.STAR:
-                    pass
+                    z1 = self._nfa.allocState()
+                    a.addArc(z1, None, NFAArc.EPSILON)
+                    z.addArc(a, None, NFAArc.EPSILON)
+                    z = z1
                 elif token.type == Token.STAR2:
-                    pass
+                    z1 = self._nfa.allocState()
+                    a.prependArc(z1, None, NFAArc.EPSILON)
+                    z.addArc(a, None, NFAArc.EPSILON)
+                    z = z1
                 elif token.type == Token.PLUS:
-                    pass
+                    z1 = self._nfa.allocState()
+                    z.addArc(a, None, NFAArc.EPSILON)
+                    z.addArc(z1, None, NFAArc.EPSILON)
+                    z = z1
                 elif token.type == Token.PLUS2:
-                    pass
-                elif token.type == Token.QUESTION:
+                    z1 = self._nfa.allocState()
+                    z.addArc(z1, None, NFAArc.EPSILON)
+                    z.addArc(a, None, NFAArc.EPSILON)
+                    z = z1
+                elif token.type == Token.QUEST:
+                    a.addArc(z, None, NFAArc.EPSILON)
+                elif token.type == Token.QUEST2:
+                    a.prependArc(z, None, NFAArc.EPSILON)
+                elif token.type == Token.LPAREN:
                     pass
                 else: # don't recognize this token, return
-                    zz.copy(a)
-                    zz = z
+                    self.putToken(token)
+                    if aa is not None:
+                        zz.addArc(a, None, NFAArc.EPSILON)
+                        zz = z
+                    else:
+                        aa, zz = a, z
                     return aa, zz
-                
+               
+                # not allow ++/**/*+/+*/... etc
+                idx = self._index
+                token2 = self.getToken()
+                if token2.type in {Token.PLUS, Token.PLUS2, Token.STAR, 
+                                   Token.STAR2, Token.QUEST, Token.QUEST2}:
+                    raise Exception(f'Syntax Error at position {idx}')
+
+                # adjust aa and zz here
+                # invariant property: len(zz._arc) == 0
+                if aa is None:
+                    aa, zz = a, z
+                else:
+                    zz.addArc(a, None, NFAArc.EPSILON)
+                    zz = z
+                assert(len(zz._arc) == 0)
+
     def alternate(self) -> tuple[NFAState]:
         """ alternate split s into different section delimit by '|'
         """
