@@ -6,8 +6,8 @@
 class Token(object):
     END = 0
     ALTER = 1
-    LPAR = 2
-    RPAR = 3
+    LPAREN = 2
+    RPAREN = 3
     STAR = 4
     STAR2 = 5
     PLUS = 6
@@ -33,8 +33,8 @@ class Tokenizer(object):
 
         self._token_dict = {
             '|': Token(Token.ALTER),
-            '(': Token(Token.LPAR),
-            ')': Token(Token.RPAR),
+            '(': Token(Token.LPAREN),
+            ')': Token(Token.RPAREN),
             '[': Token(Token.LBRACK),
             ']': Token(Token.RBRACK),
             '{': Token(Token.LBRACE),
@@ -55,29 +55,27 @@ class Tokenizer(object):
 
     def getToken(self):
         if self._cache:
-            t = self._cache 
+            token = self._cache 
             self._cache = None
-            return t
+            return token
         
         if self._index >= len(self._pat):
             return Token(Token.END, None)
 
         s = self._pat
-        tok = self._token2_dict.get(s[self._index:self._index+2], None) 
-        if tok != None:
+        token = self._token2_dict.get(s[self._index:self._index+2], None) 
+        if token != None:
             self._index += 2
-            return tok
+            return token
         
-        tok = self._token_dict.get(s[self._index], None)
-        if tok != None:
+        token = self._token_dict.get(s[self._index], None)
+        if token != None:
             self._index += 1
-            return tok
+            return token
         
-        tok = Token(Token.CHAR, s[self._index])
+        token = Token(Token.CHAR, s[self._index])
         self._index += 1
-        return tok
-
-
+        return token
 
 class NFAArc(object):
     """ NFAArc represent the arcs connecting to the nextN States,
@@ -88,11 +86,11 @@ class NFAArc(object):
         4) LPAR_TYPE, value is the group number
         5) RPAR_TYPE, value is the group number
     """
-    EPSILON_TYPE = 0
-    CHAR_TYPE = 1
-    CLASS_TYPE = 2
-    LPAR_TYPE = 3
-    RPAR_TYPE = 4
+    EPSILON = 0
+    CHAR = 1
+    CLASS = 2
+    LGROUP = 3
+    RGROUP = 4
 
     def __init__(self, target, value, type_):
         self._type = type_
@@ -127,11 +125,16 @@ class NFAState(object):
         return self._accept
     
     @accept.setter
-    def accept(self, val:bool):
-        self.accept = val
+    def accept(self, value:bool):
+        self.accept = value
 
     def addArc(self, target, value, type_):
         self._arcs.append(NFAArc(target, value, type_))
+
+    def copy(self, state2):
+        self._arcs = state2._arc
+        self.accept = state2.accept
+        state2._arc = None
 
     def __eq__(self, state):
         # __eq__ can be used to simplify the states
@@ -179,6 +182,12 @@ class RegExp(object):
         self._compiled = True
         self._tokenizer = Tokenizer(self._pat)
 
+    def getToken(self):
+        return self._tokenizer.getToken()
+    
+    def putToken(self, token):
+        return self._tokenizer.putToken(token)
+
     def concat(self) -> tuple[NFAState]:
         pass
 
@@ -186,28 +195,50 @@ class RegExp(object):
         """ concat single character,class,groups,closure,star,... etc.
         """
         s = self._pat
-        a = None
+        aa = None # NFA State to return
+        zz = None # NFA State to return
 
-        while self._index < len(s):
-            if s[self._index] == '(':
+        # !!! invariant feature: len(zz._arc) == 0
+        while True:
+            token = self.getToken()
+            if token.type == Token.LPAREN:
                 self._nfa.groups += 1
                 self._index += 1
                 group = self._nfa.groups
+                start, end = self.alternate()
 
-                a, z = self.alternate()
-                if s[self._index] != ')':
+                token = self.getToken()
+                if token.type != Token.RPAREN:
                     raise Exception('unmatch parenthesis')
-                aa = self._nfa.allocState()
-                zz = self._nfa.allocState()
                 
-                aa.addArc(a, group, NFAArc.LPAR_TYPE)
-                z.addArc(zz, group, NFAArc.RPAR_TYPE)
-                return aa, zz
+                if aa == None:
+                    assert(zz == None)
+                    aa = self._nfa.allocState()
+                    zz = self._nfa.allocState()
+                    aa.addArc(start, group, NFAArc.LGROUP)
+                    end.addArc(zz, group, NFAArc.LGROUP)
+                else:
+                    zz.addArc(start, group, NFAArc.LGROUP)
+                    z = self._nfa.allocState()
+                    end.addArc(z, group, NFAArc.LGROUP)
+                    zz = z
             else:
                 a, z = self.concat()
-                if self._index < len(s):
-                    if s[self._index] == '*':
-                        pass
+                token = self.getToken()
+                if token.type == Token.STAR:
+                    pass
+                elif token.type == Token.STAR2:
+                    pass
+                elif token.type == Token.PLUS:
+                    pass
+                elif token.type == Token.PLUS2:
+                    pass
+                elif token.type == Token.QUESTION:
+                    pass
+                else: # don't recognize this token, return
+                    zz.copy(a)
+                    zz = z
+                    return aa, zz
                 
     def alternate(self) -> tuple[NFAState]:
         """ alternate split s into different section delimit by '|'
@@ -215,24 +246,26 @@ class RegExp(object):
         s = self._pat
         a, z = self.group()
         
-        if self._index == len(s) or s[self._index] != '|':
+        token = self.getToken()
+        if token.value != Token.ALTER:
+            self.putToken(token)
             return a, z
  
         aa = self._nfa.allocState()
         zz = self._nfa.allocState()
 
         while True:
-            aa.addArc(a, None, NFAArc.EPSILON_TYPE)
-            z.addArc(zz, None, NFAArc.EPSILON_TYPE)
-            
-            if self._index < len(s) and s[self._index] == '|':
+            aa.addArc(a, None, NFAArc.EPSILON)
+            z.addArc(zz, None, NFAArc.EPSILON)
+            token = self.getToken()
+            if token.value != Token.ALTER:
+                self.putToken(token)
                 break
 
             self._index += 1
             a, z = self.concat(s)
         return aa, zz
 
-    
     def compile(self, s:str) -> NFA:
         start, end = self.alternate(s)
         if self._index != len(s):
