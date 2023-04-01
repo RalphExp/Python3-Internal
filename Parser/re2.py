@@ -68,7 +68,8 @@ class Tokenizer(object):
     def next(self):
         s = self._pat
         if self._index >= len(s):
-            return Token(Token.END, None, len(s))
+            self._token = Token(Token.END, None, len(s))
+            return self._token
 
         token = self._token2_dict.get(s[self._index:self._index+2], None)
         if token != None:
@@ -139,7 +140,7 @@ class NFAState(object):
     
     @accept.setter
     def accept(self, value:bool):
-        self.accept = value
+        self._accept = value
 
     def appendArc(self, target:NFAState, value, type_):
         self._arcs.append(NFAArc(target, value, type_))
@@ -183,17 +184,21 @@ class NFA(object):
         for i, state in enumerate(todo):
             if debug: print("  State", i, state is self.end and "(final)" or "")
             for arc in state._arcs:
-                label = arc.label
                 next = arc.target
                 if next in todo:
                     j = todo.index(next)
                 else:
                     j = len(todo)
                     todo.append(next)
-                if label is None:
-                    if debug: print("    -> %d" % j)
-                else:
-                    if debug: print("    %s -> %d" % (label, j))
+                if debug:
+                    if arc._type == NFAArc.EPSILON:
+                        print("    %s -> %d" % ("ε", j))
+                    elif arc._type == NFAArc.LGROUP:
+                        print("    ( -> %d" % j)
+                    elif arc._type == NFAArc.RGROUP:
+                        print("    ) -> %d" % j)
+                    elif arc._type == NFAArc.CHAR:
+                        print("    %s -> %d" % (arc._value, j))
         self._nodes = todo
 
 class Thread(object):
@@ -234,7 +239,7 @@ class RegExp(object):
             # currently only suport Token.CHAR
             if token.type == Token.CHAR:
                 z = self._nfa.newState()
-                zz.appendArc(z, token.value, Token.CHAR)
+                zz.appendArc(z, token.value, NFAArc.CHAR)
                 zz = z
                 self.nextToken()
             elif token.type == Token.END:
@@ -243,7 +248,8 @@ class RegExp(object):
                 break
 
         if zz == aa:
-            raise Exception('Syntax Error')
+            # Null String!
+            return None, None
         return aa, zz
 
     def group(self) -> tuple[NFAState]:
@@ -318,10 +324,10 @@ class RegExp(object):
                     self.nextToken()
                     a.prependArc(z, None, NFAArc.EPSILON)
                 elif token.type in (Token.ALTER, Token.END):
-                    # if meet the ALTER token, should return and let alternate
-                    # to handle it, but if aa is None, we should skip it and
+                    # if meet the ALTER token, we should return and let alter
+                    # to handle it, but if a/z is None, we should skip it and
                     # continue to parse.
-                    if token.type == Token.ALTER and aa is None:
+                    if token.type == Token.ALTER and a is None:
                         self.nextToken()
                         continue
                     if aa is not None:
@@ -385,6 +391,11 @@ class RegExp(object):
         start, end = self.alternate()
         if self._tokenizer.index != len(s):
             raise Exception(f'Unexpected token: {self.getToken()}')
+
+        if start is None:
+            assert(end is None)
+            start = self._nfa.newState()
+            end = self._nfa.newState()
 
         end.accept = True
         self._nfa.start = start
