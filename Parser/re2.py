@@ -422,5 +422,7 @@ if __name__ == '__main__':
     # re.compile()
     # re = RegExp('(ab)*', debug=True)
     # re.compile()
-    re = RegExp('(ab|cd)*', debug=True)
+    # re = RegExp('(ab|cd)*', debug=True)
+    # re.compile()
+    re = RegExp('(ab|c+?d)*', debug=True)
     re.compile()
