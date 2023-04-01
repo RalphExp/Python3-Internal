@@ -133,7 +133,7 @@ class NFAState(object):
     def accept(self, value:bool):
         self.accept = value
 
-    def addArc(self, target, value, type_):
+    def appendArc(self, target, value, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
     def prependArc(self, target, value, type_):
@@ -158,17 +158,35 @@ class NFAState(object):
     
 class NFA(object):
     def __init__(self):
-        self._start = -1
-        self._end = -1
+        self._start = None
+        self._end = None
         self._nodes = []
         self._groups = 0
     
-    def allocState(self) -> NFAState:
+    def newState(self) -> NFAState:
         state = NFAState()
-        state._index = len(self._nodes)
+        # state._index = len(self._nodes)
         self._nodes.append(state)
         return state
-
+    
+    def dump(self, debug):
+        """Dump a graphical representation of the NFA"""
+        todo = [self.start]
+        for i, state in enumerate(todo):
+            if debug: print("  State", i, state is self.end and "(final)" or "")
+            for arc in state._arcs:
+                label = arc.label
+                next = arc.target
+                if next in todo:
+                    j = todo.index(next)
+                else:
+                    j = len(todo)
+                    todo.append(next)
+                if label is None:
+                    if debug: print("    -> %d" % j)
+                else:
+                    if debug: print("    %s -> %d" % (label, j))
+        self._nodes = todo
 
 class Thread(object):
     pass
@@ -183,13 +201,15 @@ class RegExp(object):
     note that is this different from pgen's NFA, we want to 
     make it more intuitive
     """
-    def __init__(self, pattern):
+    def __init__(self, pattern, debug=True):
         self._pat = pattern
         self._index = 0
-        self._compiled = False
-        self._nfa = compile()
-        self._compiled = True
+        self._debug = debug
         self._tokenizer = Tokenizer(self._pat)
+        self._nfa = NFA()
+        self._compiled = False
+        self.compile()
+        self._compiled = True
 
     def getToken(self):
         return self._tokenizer.getToken()
@@ -198,12 +218,26 @@ class RegExp(object):
         return self._tokenizer.putToken(token)
 
     def concat(self) -> tuple[NFAState]:
-        pass
+        aa = self._nfa.newState()
+        zz = aa
+
+        while True:
+            token = self.getToken()
+            # currently only suport Token.CHAR
+            if token.type == Token.CHAR:
+                z = self._nfa.newState()
+                zz.appendArc(z, token.value, Token.CHAR)
+                zz = z
+            else:
+                break
+
+        if zz == aa:
+            raise Exception('Syntax Error')
+        return aa, zz
 
     def group(self) -> tuple[NFAState]:
         """ concat single character,class,groups,closure,star,... etc.
         """
-        s = self._pat
         aa = None # NFA State to return
         zz = None # NFA State to return
 
@@ -222,40 +256,40 @@ class RegExp(object):
                 
                 if aa == None:
                     assert(zz == None)
-                    aa = self._nfa.allocState()
-                    zz = self._nfa.allocState()
-                    aa.addArc(start, group, NFAArc.LGROUP)
-                    end.addArc(zz, group, NFAArc.LGROUP)
+                    aa = self._nfa.newState()
+                    zz = self._nfa.newState()
+                    aa.appendArc(start, group, NFAArc.LGROUP)
+                    end.appendArc(zz, group, NFAArc.LGROUP)
                 else:
-                    zz.addArc(start, group, NFAArc.LGROUP)
-                    z = self._nfa.allocState()
-                    end.addArc(z, group, NFAArc.LGROUP)
+                    zz.appendArc(start, group, NFAArc.LGROUP)
+                    z = self._nfa.newState()
+                    end.appendArc(z, group, NFAArc.LGROUP)
                     zz = z
             else:
                 a, z = self.concat()
                 token = self.getToken()
                 if token.type == Token.STAR:
-                    z1 = self._nfa.allocState()
-                    a.addArc(z1, None, NFAArc.EPSILON)
-                    z.addArc(a, None, NFAArc.EPSILON)
+                    z1 = self._nfa.newState()
+                    a.appendArc(z1, None, NFAArc.EPSILON)
+                    z.appendArc(a, None, NFAArc.EPSILON)
                     z = z1
                 elif token.type == Token.STAR2:
-                    z1 = self._nfa.allocState()
+                    z1 = self._nfa.newState()
                     a.prependArc(z1, None, NFAArc.EPSILON)
-                    z.addArc(a, None, NFAArc.EPSILON)
+                    z.appendArc(a, None, NFAArc.EPSILON)
                     z = z1
                 elif token.type == Token.PLUS:
-                    z1 = self._nfa.allocState()
-                    z.addArc(a, None, NFAArc.EPSILON)
-                    z.addArc(z1, None, NFAArc.EPSILON)
+                    z1 = self._nfa.newState()
+                    z.appendArc(a, None, NFAArc.EPSILON)
+                    z.appendArc(z1, None, NFAArc.EPSILON)
                     z = z1
                 elif token.type == Token.PLUS2:
-                    z1 = self._nfa.allocState()
-                    z.addArc(z1, None, NFAArc.EPSILON)
-                    z.addArc(a, None, NFAArc.EPSILON)
+                    z1 = self._nfa.newState()
+                    z.appendArc(z1, None, NFAArc.EPSILON)
+                    z.appendArc(a, None, NFAArc.EPSILON)
                     z = z1
                 elif token.type == Token.QUEST:
-                    a.addArc(z, None, NFAArc.EPSILON)
+                    a.appendArc(z, None, NFAArc.EPSILON)
                 elif token.type == Token.QUEST2:
                     a.prependArc(z, None, NFAArc.EPSILON)
                 elif token.type == Token.LPAREN:
@@ -263,7 +297,7 @@ class RegExp(object):
                 else: # don't recognize this token, return
                     self.putToken(token)
                     if aa is not None:
-                        zz.addArc(a, None, NFAArc.EPSILON)
+                        zz.appendArc(a, None, NFAArc.EPSILON)
                         zz = z
                     else:
                         aa, zz = a, z
@@ -275,13 +309,14 @@ class RegExp(object):
                 if token2.type in {Token.PLUS, Token.PLUS2, Token.STAR, 
                                    Token.STAR2, Token.QUEST, Token.QUEST2}:
                     raise Exception(f'Syntax Error at position {idx}')
+                self.putToken(token2)
 
                 # adjust aa and zz here
                 # invariant property: len(zz._arc) == 0
                 if aa is None:
                     aa, zz = a, z
                 else:
-                    zz.addArc(a, None, NFAArc.EPSILON)
+                    zz.appendArc(a, None, NFAArc.EPSILON)
                     zz = z
                 assert(len(zz._arc) == 0)
 
@@ -296,12 +331,12 @@ class RegExp(object):
             self.putToken(token)
             return a, z
  
-        aa = self._nfa.allocState()
-        zz = self._nfa.allocState()
+        aa = self._nfa.newState()
+        zz = self._nfa.newState()
 
         while True:
-            aa.addArc(a, None, NFAArc.EPSILON)
-            z.addArc(zz, None, NFAArc.EPSILON)
+            aa.appendArc(a, None, NFAArc.EPSILON)
+            z.appendArc(zz, None, NFAArc.EPSILON)
             token = self.getToken()
             if token.value != Token.ALTER:
                 self.putToken(token)
@@ -311,16 +346,20 @@ class RegExp(object):
             a, z = self.concat(s)
         return aa, zz
 
-    def compile(self, s:str) -> NFA:
-        start, end = self.alternate(s)
+    def compile(self) -> NFA:
+        s = self._pat
+        start, end = self.alternate()
         if self._index != len(s):
             raise Exception(f'Unexpected character: {s[self._index]} as position {self._index}')
 
         end.accept = True
-        return NFA(start, end)
+        self._nfa.start = start
+        self._nfa.end = end
+        self._nfa.dump(self._debug)
 
     def match(text) -> Group or None:
         pass
 
 if __name__ == '__main__':
-    pass
+    re = RegExp('ab|cd|ef')
+    re.compile()
