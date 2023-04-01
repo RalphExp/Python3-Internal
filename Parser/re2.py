@@ -199,6 +199,8 @@ class NFA(object):
                         print("    ) -> %d" % j)
                     elif arc._type == NFAArc.CHAR:
                         print("    %s -> %d" % (arc._value, j))
+                    
+        if debug: print("")
         self._nodes = todo
 
 class Thread(object):
@@ -212,7 +214,12 @@ class Group(object):
 class RegExp(object):
     """ A simple regular expression using NFA for matching
     note that is this different from pgen's NFA, we want to 
-    make it more intuitive
+    make it more intuitive.
+
+    usage: re = RegExp(pattern)
+    re.compile()
+    groups = re.match(text)
+    ...
     """
     def __init__(self, pattern:str, debug:bool=False):
         self._pat = pattern
@@ -224,7 +231,7 @@ class RegExp(object):
     def getToken(self):
         # getToken get the current token but not consume it
         return self._tokenizer.token
-    
+
     def nextToken(self):
         # nextToken consumes the current one and get 
         # the next token from tokenizer
@@ -258,7 +265,7 @@ class RegExp(object):
         aa = None # NFA State to return
         zz = None # NFA State to return
 
-        pdb.set_trace()
+        # pdb.set_trace()
 
         # invariant property: len(zz._arc) == 0
         while True:
@@ -267,9 +274,8 @@ class RegExp(object):
                 break
 
             if token.type == Token.LPAREN:
-                self._nfa.groups += 1
-                self._index += 1
-                group = self._nfa.groups
+                self._nfa._groups += 1
+                group = self._nfa._groups
 
                 self.nextToken() # consume '('
                 start, end = self.alternate()
@@ -336,14 +342,14 @@ class RegExp(object):
                     else:
                         aa, zz = a, z
                     break
-               
+
                 # not allow ++/**/*+/+*/... etc
-                idx = self._index
+                idx = self._tokenizer.index
                 token = self.getToken()
                 if token.type in {Token.PLUS, Token.PLUS2, Token.STAR, 
                                    Token.STAR2, Token.QUEST, Token.QUEST2}:
                     raise Exception(f'Syntax Error at position {idx}')
-               
+
                 # adjust aa and zz here
                 # invariant property: len(zz._arc) == 0
                 if aa is None:
@@ -351,7 +357,7 @@ class RegExp(object):
                 else:
                     zz.appendArc(a, None, NFAArc.EPSILON)
                     zz = z
-                assert(len(zz._arc) == 0)
+                assert(len(zz._arcs) == 0)
 
         #end while
         return aa, zz
@@ -360,7 +366,7 @@ class RegExp(object):
     def alternate(self) -> tuple[NFAState]:
         """ alternate split s into different section delimited by '|'
         """
-        pdb.set_trace()
+        # pdb.set_trace()
 
         a, z = self.group()
 
@@ -394,7 +400,7 @@ class RegExp(object):
     def compile(self) -> None:
         if self._compiled:
             return
-        
+
         s = self._pat
         start, end = self.alternate()
         if self._tokenizer.index != len(s):
@@ -416,4 +422,10 @@ class RegExp(object):
 
 if __name__ == '__main__':
     re = RegExp('ab|||', debug=True)
+    re.compile()
+    re = RegExp('ab|cd|ef', debug=True)
+    re.compile()
+    re = RegExp('(a)*', debug=True)
+    re.compile()
+    re = RegExp('(ab)*', debug=True)
     re.compile()
