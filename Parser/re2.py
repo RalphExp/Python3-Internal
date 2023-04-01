@@ -106,7 +106,7 @@ class NFAArc(object):
     LGROUP = 3
     RGROUP = 4
 
-    def __init__(self, target:NFAState, value, type_):
+    def __init__(self, target:NFAState, value:str, type_):
         self._type = type_
         self._value = value
         self._target = target
@@ -142,10 +142,10 @@ class NFAState(object):
     def accept(self, value:bool):
         self._accept = value
 
-    def appendArc(self, target:NFAState, value, type_):
+    def appendArc(self, target:NFAState, value:str, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
-    def prependArc(self, target:NFAState, value, type_):
+    def prependArc(self, target:NFAState, value:str, type_):
         assert(len(self._arcs) == 1)
         self._arcs.insert(0, NFAArc(target, value, type_))
 
@@ -379,8 +379,16 @@ class RegExp(object):
             if token.type != Token.ALTER:
                 break
 
-            self.nextToken()
+            while True:
+                # if multiple '|' shows up, combine them into one
+                self.nextToken()
+                if self.getToken().type != Token.ALTER:
+                    break
+
             a, z = self.group()
+            if a is None: # one possible pattern is 'abc|'
+                break
+
         return aa, zz
 
     def compile(self) -> None:
@@ -407,5 +415,5 @@ class RegExp(object):
         pass
 
 if __name__ == '__main__':
-    re = RegExp('ab|cd|ef', debug=True)
+    re = RegExp('ab|||', debug=True)
     re.compile()
