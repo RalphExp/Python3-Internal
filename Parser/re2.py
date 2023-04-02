@@ -145,9 +145,15 @@ class NFAState(object):
     def appendArc(self, target:NFAState, value:str, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
+    def appendState(self, target:NFAState):
+        self._arcs += target._arcs
+
     def prependArc(self, target:NFAState, value:str, type_):
         assert(len(self._arcs) == 1)
         self._arcs.insert(0, NFAArc(target, value, type_))
+
+    def prependState(self, target:NFAState):
+        self._arcs = target._arcs + self._arcs
 
     def copy(self, state2):
         self._arcs = state2._arc
@@ -215,11 +221,6 @@ class RegExp(object):
     """ A simple regular expression using NFA for matching
     note that is this different from pgen's NFA, we want to 
     make it more intuitive.
-
-    usage: re = RegExp(pattern)
-    re.compile()
-    groups = re.match(text)
-    ...
     """
     def __init__(self, pattern:str, debug:bool=False):
         self._pat = pattern
@@ -349,7 +350,9 @@ class RegExp(object):
             if aa is None:
                 aa, zz = a, z
             else:
-                zz.appendArc(a, None, NFAArc.EPSILON)
+                # because len(zz._arc) == 0, so we can append state
+                # this will reduce the state a little bit.
+                zz.appendState(a)
                 zz = z
             assert(len(zz._arcs) == 0)
 
@@ -411,18 +414,18 @@ class RegExp(object):
         self._compiled = True
 
     def match(text) -> Group or None:
-        pass
+        raise NotImplementedError
 
 if __name__ == '__main__':
-    # re = RegExp('ab|||', debug=True)
-    # re.compile()
-    # re = RegExp('ab|cd|ef', debug=True)
-    # re.compile()
-    # re = RegExp('(a)*', debug=True)
-    # re.compile()
-    # re = RegExp('(ab)*', debug=True)
-    # re.compile()
-    # re = RegExp('(ab|cd)*', debug=True)
-    # re.compile()
+    re = RegExp('ab|||', debug=True)
+    re.compile()
+    re = RegExp('ab|cd|ef', debug=True)
+    re.compile()
+    re = RegExp('(a)*', debug=True)
+    re.compile()
+    re = RegExp('(ab)*', debug=True)
+    re.compile()
+    re = RegExp('(ab|cd)*', debug=True)
+    re.compile()
     re = RegExp('(ab|c+?d)*', debug=True)
     re.compile()
