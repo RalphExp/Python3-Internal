@@ -209,11 +209,16 @@ class NFA(object):
         if debug: print("")
         self._nodes = todo
 
+
 class Thread(object):
-    pass
+    """ use google Re2's matching algorithm
+    """
+    def __init__(self, tid):
+        self._tid = tid
+        self._groups = []
 
 
-class Group(object):
+class MatchGroup(object):
     pass
 
 
@@ -351,7 +356,7 @@ class RegExp(object):
                 aa, zz = a, z
             else:
                 # because len(zz._arc) == 0, so we can append state
-                # this will reduce the state a little bit.
+                # this will reduce the states (hopefully)
                 zz.appendState(a)
                 zz = z
             assert(len(zz._arcs) == 0)
@@ -413,7 +418,7 @@ class RegExp(object):
         self._nfa.dump(self._debug)
         self._compiled = True
 
-    def match(text) -> Group or None:
+    def match(text) -> MatchGroup or None:
         raise NotImplementedError
 
 if __name__ == '__main__':
