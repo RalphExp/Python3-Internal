@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import pdb
 
+from collections import OrderedDict
+
 class Token(object):
     END = 0
     ALTER = 1
@@ -112,7 +114,7 @@ class NFAArc(object):
         self._target = target
 
     @property
-    def arctype(self):
+    def type(self):
         return self.type_
     
     @property
@@ -181,8 +183,35 @@ class NFA(object):
     def newState(self) -> NFAState:
         state = NFAState()
         # state._index = len(self._nodes)
-        self._nodes.append(state)
+        # self._nodes.append(state)
         return state
+    
+    def closure(self):
+        """ closure return the states can be reach by an ε transition
+        and at least has a non-ε transition arc.
+        """
+        states = []
+        todo = [self]
+        s = set()
+        
+        for _, state in enumerate(todo):
+            if state in s:
+                continue
+
+            s.add(state)
+            all_epsilon = True
+            for arc in state._arcs:
+                if arc.type != NFAArc.EPSILON:
+                    all_epsilon = False
+
+                if arc.type == NFAArc.EPSILON and arc.type not in s:
+                    todo.append(arc.target)
+
+            if not all_epsilon:
+                states.append(state)
+
+        return states
+
     
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
@@ -211,21 +240,41 @@ class NFA(object):
 
 
 class Thread(object):
-    """ use google Re2's matching algorithm
+    """ use google re2's matching algorithm
     """
-    def __init__(self, tid):
-        self._tid = tid
+    def __init__(self, state, text, pos):
+        self._state = state
+        self._text = text
+        self._pos = pos
         self._groups = []
+        
+        # mark the start position
+        self._groups.append(None)
 
-
-class MatchGroup(object):
-    pass
-
+    def advance(self) -> bool:
+        return False
+    
+    @property
+    def groups(self):
+        return self._groups
+    
+    @property
+    def id(self):
+        return self._tid
+    
+    @id.setter
+    def id(self, tid):
+        self._id = tid
 
 class RegExp(object):
     """ A simple regular expression using NFA for matching
     note that is this different from pgen's NFA, we want to 
     make it more intuitive.
+
+    usage:
+        re = re2.RegExp(pattern)
+        g = re.match(text)
+        ...
     """
     def __init__(self, pattern:str, debug:bool=False):
         self._pat = pattern
@@ -233,6 +282,7 @@ class RegExp(object):
         self._tokenizer = Tokenizer(self._pat)
         self._nfa = NFA()
         self._compiled = False
+        self._threads = OrderedDict()
 
     def getToken(self):
         # getToken get the current token but not consume it
@@ -418,8 +468,42 @@ class RegExp(object):
         self._nfa.dump(self._debug)
         self._compiled = True
 
-    def match(text) -> MatchGroup or None:
-        raise NotImplementedError
+    @property
+    def threadId(self):
+        return self._tid
+    
+    @threadId.setter
+    def threadId(self, val):
+        self._tid = val
+
+    def addThread(self, text, pos):
+        startState = self._nfa._start
+        states = self._nfa.closure(startState)
+
+        for state in states:
+            th = Thread(state, text, pos)
+            next = th.advance()
+            if next and not self._threads.get(next):
+                self._threads[next] = th
+
+    def match(self, text, pos=0) -> tuple[int, int] or None:
+        if self._compiled == False:
+            self.compile()
+
+        self._tid = 0
+        self._threads.clear()
+        matchGroup = 0
+
+        while pos < len(text):
+            for _, thread in self._threads.items():
+                if thread.advance() == True:
+                    matchGroup = thread.groups
+                    break
+            
+            # try to add new threads at the start state
+            self.addThread(text, pos)
+            pos += 1
+        return matchGroup
 
 if __name__ == '__main__':
     re = RegExp('ab|||', debug=True)
