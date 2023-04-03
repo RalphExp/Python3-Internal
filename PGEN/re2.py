@@ -498,12 +498,17 @@ class RegExp(object):
         self._threads.clear()
         matchGroup = 0
 
+        newThreads = OrderedDict()
         while pos < len(text):
-            for _state, thread in self._threads.items():
-                if thread.advance() == True:
-                    matchGroup = thread.groups
-                    break
+            for thread in self._threads:
+                threads = thread.advance()
+                for th in threads:
+                    if th.state.accept:
+                        matchGroup = thread.groups
+                        break
+                    newThreads[th.state] = th
             
+            self._threads = newThreads
             # try to add new threads at the start state
             self.addThread(text, pos)
             pos += 1
