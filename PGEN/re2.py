@@ -251,12 +251,16 @@ class Thread(object):
         # mark the start position
         self._groups.append(None)
 
-    def advance(self) -> bool:
+    def advance(self) -> list[NFAState]:
         return False
     
     @property
     def groups(self):
         return self._groups
+    
+    @property
+    def state(self):
+        return self._state
     
     @property
     def id(self):
@@ -470,11 +474,9 @@ class RegExp(object):
 
     @property
     def threadId(self):
-        return self._tid
-    
-    @threadId.setter
-    def threadId(self, val):
-        self._tid = val
+        tid = self._tid
+        self._tid = tid
+        return tid
 
     def addThread(self, text, pos):
         startState = self._nfa._start
@@ -482,9 +484,11 @@ class RegExp(object):
 
         for state in states:
             th = Thread(state, text, pos)
-            next = th.advance()
-            if next and not self._threads.get(next):
-                self._threads[next] = th
+            threads = th.advance()
+            for t in threads:
+                if not self._threads.get(t.state):
+                    t.id = self.threadId
+                    self._threads[t.state] = t 
 
     def match(self, text, pos=0) -> tuple[int, int] or None:
         if self._compiled == False:
@@ -495,7 +499,7 @@ class RegExp(object):
         matchGroup = 0
 
         while pos < len(text):
-            for _, thread in self._threads.items():
+            for _state, thread in self._threads.items():
                 if thread.advance() == True:
                     matchGroup = thread.groups
                     break
