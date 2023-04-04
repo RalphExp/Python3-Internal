@@ -141,7 +141,7 @@ Now come back to the method create_dfas, because the --verbose parameter, line 1
 ```
 
 For the rule ```single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE```
-the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE). The rest of the rules are handled similarily, I saved them in the **automaton.txt**. For a interesting application of NFA see reg.py, a simple regular expression engine.
+the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE). The rest of the rules are handled similarily, I saved them in the **automaton.txt**. For a interesting application of NFA see re2.py, a simple regular expression engine.
 
 
 **NFA of single_input**
@@ -283,5 +283,8 @@ It does the following step:
         self.first[name] = totalset
 ```
 
-* create a grammar.Grammar object to dump the grammar into 2 files graminit.h, graminit.c
-** ```grammar.symbol2number``` a mapping from non-terminal symbol to int, begins from 256
+* create a grammar.Grammar object to dump the grammar into 2 files graminit.h, graminit.c, Grammar has several important fields:
+  * ```symbol2number``` a mapping from non-terminal symbol to int, begins from 256
+  * ```number2symbol``` reverse mapping from int to non-terminal symbol
+  * ```labels``` a list of (x, y) pairs where x is either a token number or a symbol number, and y is either None or a string; the strings are keywords.  The label number is the index in this list; label numbers are used to mark state transitions (arcs) in the DFAs.
+  * ```symbol2label``` mapping from label into the index of the ```labels``` list
