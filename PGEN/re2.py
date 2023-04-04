@@ -4,10 +4,9 @@
 # still in debug && for fun only :)
 
 from __future__ import annotations
+from collections import OrderedDict
 
 import pdb
-
-from collections import OrderedDict
 
 class Token(object):
     END = 0
@@ -523,17 +522,20 @@ class RegExp(object):
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
-                        print('matched')
+                        # print('matched')
                         return th.groups
                 
                     if not newThreads.get(th.state):
                         newThreads[th.state] = th
             
             # try to add new threads at the start state
+            
+            # TODO: if we found a thread has already match the text
+            # we should skip addThread??
             threads = self.addThread(text, pos, filter)
             for th in threads:
                 if th.state.accept:
-                    print('matched')
+                    # print('matched')
                     return th.groups
                 if not newThreads.get(th.state):
                     newThreads[th.state] = th
