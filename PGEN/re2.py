@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # This file shows how to use NFA to construct a regular expression engine.
-# still in debug && for fun only :)
+# still in experiment && for fun only :)
 
 from __future__ import annotations
 from collections import OrderedDict
@@ -262,7 +262,7 @@ class Thread(object):
         self._state = state
         self._text = text
         self._pos = pos
-        self._groups = groups or {0: [pos, pos]}
+        self._groups = groups or {0: [pos, None]}
 
     def _advance(self, state:NFAState, threads:list[Thread], filter:set):
         if state.accept:
@@ -288,12 +288,15 @@ class Thread(object):
                 raise NotImplementedError
             elif arc.type == NFAArc.LGROUP:
                 th = self.copy(arc.target)
-                th.groups[arc.value] = [self._pos, self._pos]
+                # only record the first occurrence
+                if not th.groups.get(arc.value):
+                    th.groups[arc.value] = [self._pos, self._pos]
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
                 th = self.copy(arc.target)
-                th.groups[arc.value][1] = self._pos
+                if not th.groups[arc.value][1]:
+                    th.groups[arc.value][1] = self._pos
                 th._advance(arc.target, threads, filter)
         return threads
 
@@ -306,6 +309,10 @@ class Thread(object):
         newThreads = []
         self._advance(self._state, newThreads, filter)
         return newThreads
+    
+    @property
+    def tid(self):
+        return self._id
 
     @property
     def groups(self):
@@ -501,6 +508,17 @@ class RegExp(object):
 
         self._threads.clear()
         gen = count()
+        matchThread = None
+
+        def compareThread(th1:Thread, th2:Thread):
+            """ we want to choose the longest match,
+            which can be compared by the tid
+            """
+            if th1 is None:
+                return th2
+            if th1.tid <= th2.tid:
+                return th1
+            return th2
 
         while pos <= len(text):
             filter = set() # intermediate states
@@ -509,25 +527,32 @@ class RegExp(object):
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
-                        return th.groups
-                
+                        matchThread = compareThread(matchThread, th)
+                        # all the thread in threads have the same tid
+                        # we don't need to advance any more
+                        break
+                    
                     if not newThreads.get(th.state):
                         newThreads[th.state] = th
             
             # try to add new threads at the start state
-            
             # TODO: if we found a thread has already match the text
             # we should skip addThread??
-            threads = self.addThread(text, pos, filter, gen)
-            for th in threads:
-                if th.state.accept:
-                    return th.groups
-                if not newThreads.get(th.state):
-                    newThreads[th.state] = th
+            if not matchThread:
+                threads = self.addThread(text, pos, filter, gen)
+                for th in threads:
+                    if th.state.accept:
+                        matchThread = compareThread(matchThread, th)
+                        # all the thread in threads have the same tid
+                        # we don't need to advance any more
+                        break
+                    if not newThreads.get(th.state):
+                        newThreads[th.state] = th
             
             self._threads = newThreads
             pos += 1
-        return None
+
+        return matchThread.groups if matchThread is not None else None 
 
 
 if __name__ == '__main__':
@@ -548,4 +573,12 @@ if __name__ == '__main__':
 
     re = RegExp('(a(b*)c(d*e))', debug=True)
     g = re.search('sssabbbbbbcdddef')
+    print(g)
+
+    re = RegExp('(ab)*', debug=True)
+    g = re.search('ab')
+    print(g)
+
+    re = RegExp('(ab)*?', debug=True)
+    g = re.search('ab')
     print(g)
