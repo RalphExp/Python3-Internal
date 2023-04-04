@@ -109,7 +109,7 @@ class NFAArc(object):
     LGROUP = 3
     RGROUP = 4
 
-    def __init__(self, target:NFAState, value:str, type_):
+    def __init__(self, target:NFAState, value:str or int, type_):
         self._type = type_
         self._value = value
         self._target = target
@@ -127,8 +127,8 @@ class NFAArc(object):
         return self._target
     
     @target.setter
-    def target(self, tar):
-        self._target = tar
+    def target(self, target):
+        self._target = target
 
 
 class NFAState(object):
@@ -145,7 +145,7 @@ class NFAState(object):
     def accept(self, value:bool):
         self._accept = value
 
-    def appendArc(self, target:NFAState, value:str, type_):
+    def appendArc(self, target:NFAState, value:str or int, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
     def appendState(self, target:NFAState):
@@ -183,7 +183,7 @@ class NFAState(object):
         return result
     
     def __hash__(self):
-        assert(self._index is not None)
+        # assert(self._index is not None)
         return self._index
 
     def __eq__(self, state):
@@ -248,10 +248,11 @@ class Thread(object):
         self._state = state
         self._text = text
         self._pos = pos
-        self._groups = groups or dict()
+        self._groups = groups or {0: [pos, pos]}
 
     def _advance(self, state:NFAState, threads:list[Thread], filter:set):
         if state.accept:
+            self._groups[0][1] = self._pos
             threads.append(self)
             return
 
@@ -263,14 +264,14 @@ class Thread(object):
             if arc.type == NFAArc.EPSILON:
                 th = Thread(arc.target, self._text, self._pos, self.groups)
                 th._advance(arc.target, threads, filter)
-            elif arc.type == NFAArc.CHAR:
+            elif arc.type == NFAArc.CHAR and self._pos < len(self._text):
                 if arc.value == self._text[self._pos]:
                     threads.append(Thread(arc.target, self._text, self._pos+1, self.groups))
-            elif arc.type == NFAArc.CLASS:
+            elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
                 raise NotImplementedError
             elif arc.type == NFAArc.LGROUP:
                 th = Thread(arc.target, self._text, self._pos, self.groups)
-                th.groups[arc.value] = (self._pos, None)
+                th.groups[arc.value] = [self._pos, self._pos]
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
@@ -284,15 +285,15 @@ class Thread(object):
         newThreads = []
         self._advance(self._state, newThreads, filter)
         return newThreads
-    
+
     @property
     def groups(self):
         return self._groups
-    
+
     @property
     def state(self):
         return self._state
-    
+
 
 class RegExp(object):
     """ A simple regular expression using NFA for matching
@@ -515,13 +516,14 @@ class RegExp(object):
 
         self._threads.clear()
         
-        while pos < len(text):
+        while pos <= len(text):
             filter = set() # intermediate states
             newThreads = OrderedDict() # result (state, thread)
             for _, thread in self._threads.items():
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
+                        print('matched')
                         return th.groups
                 
                     if not newThreads.get(th.state):
@@ -531,6 +533,7 @@ class RegExp(object):
             threads = self.addThread(text, pos, filter)
             for th in threads:
                 if th.state.accept:
+                    print('matched')
                     return th.groups
                 if not newThreads.get(th.state):
                     newThreads[th.state] = th
@@ -551,7 +554,7 @@ if __name__ == '__main__':
     # re.compile()
     # re = RegExp('(ab|cd)*', debug=True)
     # re.compile()
-    re = RegExp('(ab|c+?d)*', debug=True)
+    re = RegExp('(ab|c+?d)', debug=True)
     re.compile()
 
     import pdb
