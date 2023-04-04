@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # This file shows how to use NFA to construct a regular expression engine.
-# still debugging! for fun only :)
+# still in debug && for fun only :)
 
 from __future__ import annotations
 
@@ -116,11 +116,11 @@ class NFAArc(object):
 
     @property
     def type(self):
-        return self.type_
+        return self._type
     
     @property
     def value(self):
-        return self.value_
+        return self._value
     
     @property
     def target(self):
@@ -163,7 +163,7 @@ class NFAState(object):
         self.accept = state2.accept
         state2._arc = None
 
-    @classmethod
+    @staticmethod
     def _closure(state:NFAState, result:list[NFAState], filter:set):
         """ closure return the states can be reach by 
         an ε transition in DFS order.
@@ -171,16 +171,20 @@ class NFAState(object):
         
         for arc in state._arcs:
             if arc.type == NFAArc.EPSILON and arc.target not in filter:
-                result.add(arc.state)
-                filter.add(arc.state)
-                NFAState.closure(arc.state, result, filter)
+                result.append(arc.target)
+                filter.add(arc.target)
+                NFAState._closure(arc.target, result, filter)
             
-    @classmethod
+    @staticmethod
     def closure(state):
         result = [state]
         filter = {state}
         NFAState._closure(state, result, filter)
         return result
+    
+    def __hash__(self):
+        assert(self._index is not None)
+        return self._index
 
     def __eq__(self, state):
         # __eq__ can be used to simplify the states
@@ -211,9 +215,11 @@ class NFA(object):
     
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
-        todo = [self.start]
+        todo = [self._start]
         for i, state in enumerate(todo):
-            if debug: print("  State", i, state is self.end and "(final)" or "")
+            # set index to the state, index will be used in hashing
+            state._index = i
+            if debug: print("  State", i, state is self._end and "(final)" or "")
             for arc in state._arcs:
                 next = arc.target
                 if next in todo:
@@ -238,13 +244,13 @@ class NFA(object):
 class Thread(object):
     """ use google re2's matching algorithm
     """
-    def __init__(self, state, text, pos, groups):
+    def __init__(self, state, text, pos, groups=None):
         self._state = state
         self._text = text
         self._pos = pos
         self._groups = groups or dict()
 
-    def _advance(self, state, threads:list[Thread], filter:set):
+    def _advance(self, state:NFAState, threads:list[Thread], filter:set):
         if state.accept:
             threads.append(self)
             return
@@ -255,26 +261,26 @@ class Thread(object):
 
             filter.add(arc.target)
             if arc.type == NFAArc.EPSILON:
-                th = Thread(arc._target, self._text, self._pos, self.groups)
-                th._advance(arc._target, threads, filter)
+                th = Thread(arc.target, self._text, self._pos, self.groups)
+                th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.CHAR:
                 if arc.value == self._text[self._pos]:
-                    threads.append(Thread(arc._target, self._text, self._pos + 1, self.groups))
+                    threads.append(Thread(arc.target, self._text, self._pos+1, self.groups))
             elif arc.type == NFAArc.CLASS:
                 raise NotImplementedError
             elif arc.type == NFAArc.LGROUP:
-                th = Thread(arc._target, self._text, self._pos, self.groups)
-                th.groups[arc.value][0] = self._pos
-                th.advance(arc._target, self._text, self._pos, self.groups)
+                th = Thread(arc.target, self._text, self._pos, self.groups)
+                th.groups[arc.value] = (self._pos, None)
+                th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
-                th = Thread(arc._target, self._text, self._pos, self.groups)
+                th = Thread(arc.target, self._text, self._pos, self.groups)
                 th.groups[arc.value][1] = self._pos
-                th.advance(arc._target, threads, filter)
+                th._advance(arc.target, threads, filter)
         return threads
 
 
-    def advance(self, filter) -> list[NFAState]:
+    def advance(self, filter:set) -> list[NFAState]:
         newThreads = []
         self._advance(self._state, newThreads, filter)
         return newThreads
@@ -295,7 +301,7 @@ class RegExp(object):
 
     usage:
         re = re2.RegExp(pattern)
-        g = re.match(text)
+        g = re.search(text)
         ...
     """
     def __init__(self, pattern:str, debug:bool=False):
@@ -485,26 +491,25 @@ class RegExp(object):
             end = self._nfa.newState()
 
         end.accept = True
-        self._nfa.start = start
-        self._nfa.end = end
+        self._nfa._start = start
+        self._nfa._end = end
         self._nfa.dump(self._debug)
         self._compiled = True
 
     def addThread(self, text:str, pos:int, filter:set):
-        startState = self._nfa._start
-        states = NFAState.closure(startState)
+        start = self._nfa._start
+        states = NFAState.closure(start)
+        threads = []
 
         for state in states:
             if state in filter:
                 continue
 
-            th = Thread(state, text, pos)
-            threads = th.advance(filter)
-            for t in threads:
-                if not self._threads.get(t.state):
-                    self._threads[t.state] = t 
+            th = Thread(state, text, pos, groups=None)
+            threads += th.advance(filter)
+        return threads
 
-    def match(self, text, pos=0) -> dict:
+    def search(self, text, pos=0) -> dict:
         if self._compiled == False:
             self.compile()
 
@@ -536,15 +541,21 @@ class RegExp(object):
 
 
 if __name__ == '__main__':
-    re = RegExp('ab|||', debug=True)
-    re.compile()
-    re = RegExp('ab|cd|ef', debug=True)
-    re.compile()
-    re = RegExp('(a)*', debug=True)
-    re.compile()
-    re = RegExp('(ab)*', debug=True)
-    re.compile()
-    re = RegExp('(ab|cd)*', debug=True)
-    re.compile()
+    # re = RegExp('ab|||', debug=True)
+    # re.compile()
+    # re = RegExp('ab|cd|ef', debug=True)
+    # re.compile()
+    # re = RegExp('(a)*', debug=True)
+    # re.compile()
+    # re = RegExp('(ab)*', debug=True)
+    # re.compile()
+    # re = RegExp('(ab|cd)*', debug=True)
+    # re.compile()
     re = RegExp('(ab|c+?d)*', debug=True)
     re.compile()
+
+    import pdb
+    pdb.set_trace()
+    g = re.search('ab')
+    print(g)
+    
