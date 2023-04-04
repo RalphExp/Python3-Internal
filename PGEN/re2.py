@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 from collections import OrderedDict
+from itertools import count
 
 import pdb
 
@@ -222,7 +223,6 @@ class NFA(object):
     
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
-        # pdb.set_trace()
         todo = [self._start]
         for i, state in enumerate(todo):
             # set index to the state, index will be used in hashing
@@ -255,9 +255,10 @@ class NFA(object):
 
 
 class Thread(object):
-    """ use google re2's matching algorithm
+    """ use google re2's BFS matching algorithm
     """
-    def __init__(self, state, text, pos, groups=None):
+    def __init__(self, id, state, text, pos, groups=None):
+        self._id = id
         self._state = state
         self._text = text
         self._pos = pos
@@ -270,35 +271,36 @@ class Thread(object):
             return
 
         for arc in state._arcs:
-            # if arc.target._index is None:
-            #     pdb.set_trace()
-
             if arc.target in filter:
                 continue
 
             filter.add(arc.target)
             if arc.type == NFAArc.EPSILON:
-                th = Thread(arc.target, self._text, self._pos, self.groups)
+                th = self.copy(arc.target)
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.CHAR and self._pos < len(self._text):
                 if arc.value == self._text[self._pos]:
-                    th = Thread(arc.target, self._text, self._pos+1, self.groups)
+                    th = self.copy(arc.target, pos=self._pos+1)
                     if arc.target.accept:
                         th._groups[0][1] = self._pos+1
                     threads.append(th)
             elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
                 raise NotImplementedError
             elif arc.type == NFAArc.LGROUP:
-                th = Thread(arc.target, self._text, self._pos, self.groups)
+                th = self.copy(arc.target)
                 th.groups[arc.value] = [self._pos, self._pos]
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
-                th = Thread(arc.target, self._text, self._pos, self.groups)
+                th = self.copy(arc.target)
                 th.groups[arc.value][1] = self._pos
                 th._advance(arc.target, threads, filter)
         return threads
 
+    def copy(self, state, pos=None) -> Thread:
+        th = Thread(self._id, state, self._text, self._pos, self.groups)
+        if pos: th._pos = pos
+        return th
 
     def advance(self, filter:set) -> list[NFAState]:
         newThreads = []
@@ -437,9 +439,7 @@ class RegExp(object):
     def alternate(self) -> tuple[NFAState]:
         """ alternate split s into different section delimited by '|'
         """
-        # pdb.set_trace()
         a, z = self.concat()
-
         token = self.getToken()
         if token.type != Token.ALTER:
             return a, z
@@ -487,26 +487,21 @@ class RegExp(object):
         self._nfa.dump(self._debug)
         self._compiled = True
 
-    def addThread(self, text:str, pos:int, filter:set):
+    def addThread(self, text:str, pos:int, filter:set, gen):
         start = self._nfa._start
-        states = NFAState.closure(start)
-        threads = []
-
-        for state in states:
-            if state in filter:
-                continue
-            
-            th = Thread(state, text, pos, groups=None)
-            threads += th.advance(filter)
+        # states = NFAState.closure(start)
+        threads = []    
+        th = Thread(next(gen), start, text, pos, groups=None)
+        threads += th.advance(filter)
         return threads
 
     def search(self, text, pos=0) -> dict:
         if self._compiled == False:
             self.compile()
 
-        # pdb.set_trace()
         self._threads.clear()
-        
+        gen = count()
+
         while pos <= len(text):
             filter = set() # intermediate states
             newThreads = OrderedDict() # result (state, thread)
@@ -514,8 +509,6 @@ class RegExp(object):
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
-                        print('matched: 1')
-                        pdb.set_trace()
                         return th.groups
                 
                     if not newThreads.get(th.state):
@@ -525,10 +518,9 @@ class RegExp(object):
             
             # TODO: if we found a thread has already match the text
             # we should skip addThread??
-            threads = self.addThread(text, pos, filter)
+            threads = self.addThread(text, pos, filter, gen)
             for th in threads:
                 if th.state.accept:
-                    print('matched: 2')
                     return th.groups
                 if not newThreads.get(th.state):
                     newThreads[th.state] = th
@@ -554,6 +546,6 @@ if __name__ == '__main__':
     g = re.search('ccccccccd')
     print(g)
 
-    re = RegExp('ab*cd*e', debug=True)
+    re = RegExp('(a(b*)c(d*e))', debug=True)
     g = re.search('sssabbbbbbcdddef')
     print(g)
