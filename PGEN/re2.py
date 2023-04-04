@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # This file shows how to use NFA to construct a regular expression engine.
+# still debugging! for fun only :)
 
 from __future__ import annotations
 
