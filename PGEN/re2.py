@@ -321,39 +321,63 @@ class RegExp(object):
         # the next token from tokenizer
         return self._tokenizer.next()
 
+    def modify(self, a, z) -> tuple[NFAState]:
+        """ handles STAR/QUEST/PLUS,... etc.
+        """
+ 
+        # invariant property: len(z._arc) == 0
+        # now handle the STAR/PLUS/QUESTION
+        token = self.getToken()
+        if token.type == Token.STAR:
+            self.nextToken()
+            z1 = self._nfa.newState()
+            a.appendArc(z1, None, NFAArc.EPSILON)
+            z.appendArc(a, None, NFAArc.EPSILON)
+            z = z1
+        elif token.type == Token.STAR2:
+            self.nextToken()
+            z1 = self._nfa.newState()
+            a.prependArc(z1, None, NFAArc.EPSILON)
+            z.appendArc(a, None, NFAArc.EPSILON)
+            z = z1
+        elif token.type == Token.PLUS:
+            self.nextToken()
+            z1 = self._nfa.newState()
+            z.appendArc(a, None, NFAArc.EPSILON)
+            z.appendArc(z1, None, NFAArc.EPSILON)
+            z = z1
+        elif token.type == Token.PLUS2:
+            self.nextToken()
+            z1 = self._nfa.newState()
+            z.appendArc(z1, None, NFAArc.EPSILON)
+            z.appendArc(a, None, NFAArc.EPSILON)
+            z = z1
+        elif token.type == Token.QUEST:
+            self.nextToken()
+            a.appendArc(z, None, NFAArc.EPSILON)
+        elif token.type == Token.QUEST2:
+            self.nextToken()
+            a.prependArc(z, None, NFAArc.EPSILON)
+        else:
+            return a, z
+
+        # not allow ++/**/*+/+*/... etc
+        idx = self._tokenizer.index
+        token = self.getToken()
+        if token.type in {Token.PLUS, Token.PLUS2, Token.STAR, 
+                            Token.STAR2, Token.QUEST, Token.QUEST2}:
+            raise Exception(f'Syntax Error at position {idx}')
+        
+        assert(len(z._arcs) == 0) 
+        return a, z
+
     def concat(self) -> tuple[NFAState]:
-        aa = self._nfa.newState()
-        zz = aa
+        aa = None
+        zz = None
 
         while True:
             token = self.getToken()
             # currently only suport Token.CHAR
-            if token.type == Token.CHAR:
-                z = self._nfa.newState()
-                zz.appendArc(z, token.value, NFAArc.CHAR)
-                zz = z
-                self.nextToken()
-            elif token.type == Token.END:
-                break
-            else:
-                break
-
-        if zz == aa:
-            # Null String!
-            return None, None
-        return aa, zz
-
-    def group(self) -> tuple[NFAState]:
-        """ concat single character,class,groups,closure,star,... etc.
-        """
-        aa = None # NFA State to return
-        zz = None
-
-        # pdb.set_trace()
-        # invariant property: len(zz._arc) == 0
-        while True:
-            token = self.getToken()
-
             if token.type == Token.LPAREN:
                 self._nfa._groups += 1
                 group = self._nfa._groups
@@ -369,85 +393,32 @@ class RegExp(object):
                 a.appendArc(a1, group, NFAArc.LGROUP)
                 z1.appendArc(z, group, NFAArc.RGROUP)
             elif token.type == Token.CHAR:
-                # TODO: currently only handle Token.CHAR
-                a, z = self.concat()
+                a = self._nfa.newState()
+                z = self._nfa.newState()
+                a.appendArc(z, token.value, NFAArc.CHAR)
+                self.nextToken()
             else:
-                # don't recognize this token, break
+                # currently not implement or token we don't recognize
                 break
 
-            # now handle the STAR/PLUS/QUESTION
-            token = self.getToken()
-            if token.type == Token.STAR:
-                self.nextToken()
-                z1 = self._nfa.newState()
-                a.appendArc(z1, None, NFAArc.EPSILON)
-                z.appendArc(a, None, NFAArc.EPSILON)
-                z = z1
-            elif token.type == Token.STAR2:
-                self.nextToken()
-                z1 = self._nfa.newState()
-                a.prependArc(z1, None, NFAArc.EPSILON)
-                z.appendArc(a, None, NFAArc.EPSILON)
-                z = z1
-            elif token.type == Token.PLUS:
-                self.nextToken()
-                z1 = self._nfa.newState()
-                z.appendArc(a, None, NFAArc.EPSILON)
-                z.appendArc(z1, None, NFAArc.EPSILON)
-                z = z1
-            elif token.type == Token.PLUS2:
-                self.nextToken()
-                z1 = self._nfa.newState()
-                z.appendArc(z1, None, NFAArc.EPSILON)
-                z.appendArc(a, None, NFAArc.EPSILON)
-                z = z1
-            elif token.type == Token.QUEST:
-                self.nextToken()
-                a.appendArc(z, None, NFAArc.EPSILON)
-            elif token.type == Token.QUEST2:
-                self.nextToken()
-                a.prependArc(z, None, NFAArc.EPSILON)
-            elif token.type in (Token.ALTER, Token.END):
-                # if meet the ALTER token, we should return and let alter
-                # to handle it, but if a/z is None, we should skip it and
-                # continue to parse.
-                if token.type == Token.ALTER and a is None:
-                    self.nextToken()
-                    continue
-                if aa is not None:
-                    zz.appendArc(a, None, NFAArc.EPSILON)
-                    zz = z
-                else:
-                    aa, zz = a, z
-                break
-
-            # not allow ++/**/*+/+*/... etc
-            idx = self._tokenizer.index
-            token = self.getToken()
-            if token.type in {Token.PLUS, Token.PLUS2, Token.STAR, 
-                                Token.STAR2, Token.QUEST, Token.QUEST2}:
-                raise Exception(f'Syntax Error at position {idx}')
-
-            # adjust aa and zz here
-            # invariant property: len(zz._arc) == 0
-            if aa is None:
-                aa, zz = a, z
+            a, z = self.modify(a, z)
+            if not aa:
+                aa = a
+                zz = z
             else:
-                # because len(zz._arc) == 0, so we can append state
-                # this will reduce the states (hopefully)
                 zz.appendState(a)
                 zz = z
-            assert(len(zz._arcs) == 0)
 
-        #end while
+        if zz == aa:
+            # Null String!
+            return None, None
         return aa, zz
-
 
     def alternate(self) -> tuple[NFAState]:
         """ alternate split s into different section delimited by '|'
         """
         # pdb.set_trace()
-        a, z = self.group()
+        a, z = self.concat()
 
         token = self.getToken()
         if token.type != Token.ALTER:
@@ -470,7 +441,7 @@ class RegExp(object):
                 if self.getToken().type != Token.ALTER:
                     break
 
-            a, z = self.group()
+            a, z = self.concat()
             if a is None: # one possible pattern is 'abc|'
                 break
 
@@ -565,4 +536,10 @@ if __name__ == '__main__':
     print(g)
     
     g = re.search('ccccccccd')
+    print(g)
+
+    re = RegExp('ab*c*d', debug=True)
+    re.compile()
+
+    g = re.search('abbbcccd')
     print(g)
