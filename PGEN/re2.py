@@ -144,6 +144,14 @@ class NFAState(object):
     def accept(self, value:bool):
         self._accept = value
 
+    @property
+    def index(self):
+        return self._index
+    
+    @index.setter
+    def index(self, val:int):
+        self._index = val
+
     def appendArc(self, target:NFAState, value:str or int, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
@@ -195,7 +203,7 @@ class NFAState(object):
                 return False
         return True
     
-    def simply(self):
+    def simplify(self):
         raise NotImplementedError
 
     
@@ -214,27 +222,33 @@ class NFA(object):
     
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
+        # pdb.set_trace()
         todo = [self._start]
         for i, state in enumerate(todo):
             # set index to the state, index will be used in hashing
-            state._index = i
+            state.index = i
             if debug: print("  State", i, state is self._end and "(final)" or "")
             for arc in state._arcs:
                 next = arc.target
                 if next in todo:
                     j = todo.index(next)
+                    # XXX: there's a trap here, because of the __eq__, 
+                    # next may not equal to todo[j], must fix the arc to 
+                    # point to the correct state
+                    if next.index != todo[j].index:
+                        arc.target = todo[j]
                 else:
                     j = len(todo)
                     todo.append(next)
                 if debug:
-                    if arc._type == NFAArc.EPSILON:
+                    if arc.type == NFAArc.EPSILON:
                         print("    %s -> %d" % ("ε", j))
-                    elif arc._type == NFAArc.LGROUP:
+                    elif arc.type == NFAArc.LGROUP:
                         print("    ( -> %d" % j)
-                    elif arc._type == NFAArc.RGROUP:
+                    elif arc.type == NFAArc.RGROUP:
                         print("    ) -> %d" % j)
-                    elif arc._type == NFAArc.CHAR:
-                        print("    %s -> %d" % (arc._value, j))
+                    elif arc.type == NFAArc.CHAR:
+                        print("    %s -> %d" % (arc.value, j))
                     
         if debug: print("")
         self._nodes = todo
@@ -256,6 +270,9 @@ class Thread(object):
             return
 
         for arc in state._arcs:
+            # if arc.target._index is None:
+            #     pdb.set_trace()
+
             if arc.target in filter:
                 continue
 
@@ -265,7 +282,10 @@ class Thread(object):
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.CHAR and self._pos < len(self._text):
                 if arc.value == self._text[self._pos]:
-                    threads.append(Thread(arc.target, self._text, self._pos+1, self.groups))
+                    th = Thread(arc.target, self._text, self._pos+1, self.groups)
+                    if arc.target.accept:
+                        th._groups[0][1] = self._pos+1
+                    threads.append(th)
             elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
                 raise NotImplementedError
             elif arc.type == NFAArc.LGROUP:
@@ -475,7 +495,7 @@ class RegExp(object):
         for state in states:
             if state in filter:
                 continue
-
+            
             th = Thread(state, text, pos, groups=None)
             threads += th.advance(filter)
         return threads
@@ -484,6 +504,7 @@ class RegExp(object):
         if self._compiled == False:
             self.compile()
 
+        # pdb.set_trace()
         self._threads.clear()
         
         while pos <= len(text):
@@ -493,7 +514,8 @@ class RegExp(object):
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
-                        # print('matched')
+                        print('matched: 1')
+                        pdb.set_trace()
                         return th.groups
                 
                     if not newThreads.get(th.state):
@@ -506,7 +528,7 @@ class RegExp(object):
             threads = self.addThread(text, pos, filter)
             for th in threads:
                 if th.state.accept:
-                    # print('matched')
+                    print('matched: 2')
                     return th.groups
                 if not newThreads.get(th.state):
                     newThreads[th.state] = th
@@ -527,19 +549,17 @@ if __name__ == '__main__':
     # re.compile()
     # re = RegExp('(ab|cd)*', debug=True)
     # re.compile()
-    re = RegExp('(ab|c+?d)', debug=True)
-    re.compile()
+    # re = RegExp('(ab|c+?d)', debug=True)
+    # re.compile()
 
-    # import pdb
-    # pdb.set_trace()
-    g = re.search('ab')
-    print(g)
+    # # import pdb
+    # # pdb.set_trace()
+    # g = re.search('ab')
+    # print(g)
     
-    g = re.search('ccccccccd')
-    print(g)
+    # g = re.search('ccccccccd')
+    # print(g)
 
-    re = RegExp('ab*c*d', debug=True)
-    re.compile()
-
-    g = re.search('abbbcccd')
+    re = RegExp('ab*c', debug=True)
+    g = re.search('abbbbbbc')
     print(g)
