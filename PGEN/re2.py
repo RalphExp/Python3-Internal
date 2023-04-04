@@ -539,27 +539,21 @@ class RegExp(object):
 
 
 if __name__ == '__main__':
-    # re = RegExp('ab|||', debug=True)
-    # re.compile()
-    # re = RegExp('ab|cd|ef', debug=True)
-    # re.compile()
-    # re = RegExp('(a)*', debug=True)
-    # re.compile()
-    # re = RegExp('(ab)*', debug=True)
-    # re.compile()
-    # re = RegExp('(ab|cd)*', debug=True)
-    # re.compile()
-    # re = RegExp('(ab|c+?d)', debug=True)
-    # re.compile()
+    re = RegExp('ab|||', debug=True)
+    re.compile()
+    re = RegExp('ab|cd|ef', debug=True)
+    re.compile()
+    re = RegExp('(a)*', debug=True)
+    re.compile()
+    re = RegExp('(ab)*', debug=True)
+    re.compile()
+    re = RegExp('(ab|cd)*', debug=True)
+    re.compile()
+    re = RegExp('(ab|c+?d)', debug=True)
+    re.compile()
+    g = re.search('ccccccccd')
+    print(g)
 
-    # # import pdb
-    # # pdb.set_trace()
-    # g = re.search('ab')
-    # print(g)
-    
-    # g = re.search('ccccccccd')
-    # print(g)
-
-    re = RegExp('ab*c', debug=True)
-    g = re.search('abbbbbbc')
+    re = RegExp('ab*cd*e', debug=True)
+    g = re.search('sssabbbbbbcdddef')
     print(g)
