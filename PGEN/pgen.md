@@ -238,7 +238,7 @@ class DFAState(object):
 ```
 
 ### Grammar file for C
-After creating and simplifing the DFA, pgen will create a graminit.h and graminit.c file for the C parser to consume.
+After creating and simplifing the DFA, pgen will create files for the C parser to consume.
 
 It does the following step:
 * create the firstset for every name(non-terminated symbol)
@@ -282,3 +282,6 @@ It does the following step:
                 inverse[symbol] = label
         self.first[name] = totalset
 ```
+
+* create a grammar.Grammar object to dump the grammar into 2 files graminit.h, graminit.c
+** ```grammar.symbol2number``` a mapping from non-terminal symbol to int, begins from 256
