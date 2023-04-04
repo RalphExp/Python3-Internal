@@ -238,4 +238,47 @@ class DFAState(object):
 ```
 
 ### Grammar file for C
-After simplifying the DFAs,
+After creating and simplifing the DFA, pgen will create a graminit.h and graminit.c file for the C parser to consume.
+
+It does the following step:
+* create the firstset for every name(non-terminated symbol)
+``` python
+    def calculate_first_sets_for_rule(self, name):
+        dfa = self.dfas[name]
+        self.first[name] = None  # dummy to detect left recursion
+        state = dfa.states[0]
+        totalset = set()
+        overlapcheck = {}
+
+        # for every state can be reached from state[0]
+        # calculate their first set and add them together as our first set
+        for label, next in state.arcs.items():
+            if label in self.dfas:
+                # this is a non-terminal symbol
+                # calculate its first set
+                if label in self.first:
+                    fset = self.first[label]
+                    if fset is None:
+                        raise ValueError("recursion for rule %r" % name)
+                else:
+                    self.calculate_first_sets_for_rule(label)
+                    fset = self.first[label]
+                # add to our first set
+                totalset.update(fset)
+                overlapcheck[label] = fset
+            else:
+                # this is an terminal symbol (TOKEN), add it directly
+                totalset.add(label)
+                overlapcheck[label] = {label}
+        inverse = {}
+        for label, itsfirst in overlapcheck.items():
+            for symbol in itsfirst:
+                if symbol in inverse:
+                    raise ValueError(
+                        "rule %s is ambiguous; %s is in the"
+                        " first sets of %s as well as %s"
+                        % (name, symbol, label, inverse[symbol])
+                    )
+                inverse[symbol] = label
+        self.first[name] = totalset
+```
