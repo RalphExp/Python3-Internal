@@ -523,8 +523,9 @@ class RegExp(object):
                 return th2
             if th1.tid < th2.tid:
                 return th1
-            # when th1.tid == th2.tid 
-            # alway choose th2 because th2 is a longer match
+            # when th1.tid == th2.tid alway choose th2,
+            # because th2 is a longer match. if th1.tid > th2.tid,
+            # it means th2 is a earlier matching.
             return th2
 
         while pos <= len(text):
