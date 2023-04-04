@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from itertools import count
 
+import copy
 import pdb
 
 class Token(object):
@@ -266,6 +267,7 @@ class Thread(object):
 
     def _advance(self, state:NFAState, threads:list[Thread], filter:set):
         if state.accept:
+            self._groups = copy.deepcopy(self._groups)
             self._groups[0][1] = self._pos
             threads.append(self)
             return
@@ -282,6 +284,7 @@ class Thread(object):
                 if arc.value == self._text[self._pos]:
                     th = self.copy(arc.target, pos=self._pos+1)
                     if arc.target.accept:
+                        th._groups = copy.deepcopy(self._groups)
                         th._groups[0][1] = self._pos+1
                     threads.append(th)
             elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
@@ -290,13 +293,15 @@ class Thread(object):
                 th = self.copy(arc.target)
                 # only record the first occurrence
                 if not th.groups.get(arc.value):
-                    th.groups[arc.value] = [self._pos, self._pos]
+                    th._groups = copy.deepcopy(self._groups)
+                    th._groups[arc.value] = [self._pos, None]
                 th._advance(arc.target, threads, filter)
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
                 th = self.copy(arc.target)
                 if not th.groups[arc.value][1]:
-                    th.groups[arc.value][1] = self._pos
+                    th._groups = copy.deepcopy(self._groups)
+                    th._groups[arc.value][1] = self._pos
                 th._advance(arc.target, threads, filter)
         return threads
 
@@ -516,8 +521,10 @@ class RegExp(object):
             """
             if th1 is None:
                 return th2
-            if th1.tid <= th2.tid:
+            if th1.tid < th2.tid:
                 return th1
+            # when th1.tid == th2.tid 
+            # alway choose th2 because th2 is a longer match
             return th2
 
         while pos <= len(text):
