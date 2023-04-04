@@ -162,6 +162,25 @@ class NFAState(object):
         self.accept = state2.accept
         state2._arc = None
 
+    @classmethod
+    def _closure(state:NFAState, result:list[NFAState], filter:set):
+        """ closure return the states can be reach by 
+        an ε transition in DFS order.
+        """
+        
+        for arc in state._arcs:
+            if arc.type == NFAArc.EPSILON and arc.target not in filter:
+                result.add(arc.state)
+                filter.add(arc.state)
+                NFAState.closure(arc.state, result, filter)
+            
+    @classmethod
+    def closure(state):
+        result = [state]
+        filter = {state}
+        NFAState._closure(state, result, filter)
+        return result
+
     def __eq__(self, state):
         # __eq__ can be used to simplify the states
         if len(self._arcs) != len(state._arcs):
@@ -171,6 +190,9 @@ class NFAState(object):
             if self._arcs[i] != state._arcs[i]:
                 return False
         return True
+    
+    def simply(self):
+        raise NotImplementedError
 
     
 class NFA(object):
@@ -185,33 +207,6 @@ class NFA(object):
         # state._index = len(self._nodes)
         # self._nodes.append(state)
         return state
-    
-    def closure(self):
-        """ closure return the states can be reach by an ε transition
-        and at least has a non-ε transition arc.
-        """
-        states = []
-        todo = [self]
-        s = set()
-        
-        for _, state in enumerate(todo):
-            if state in s:
-                continue
-
-            s.add(state)
-            all_epsilon = True
-            for arc in state._arcs:
-                if arc.type != NFAArc.EPSILON:
-                    all_epsilon = False
-
-                if arc.type == NFAArc.EPSILON and arc.type not in s:
-                    todo.append(arc.target)
-
-            if not all_epsilon:
-                states.append(state)
-
-        return states
-
     
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
@@ -242,17 +237,46 @@ class NFA(object):
 class Thread(object):
     """ use google re2's matching algorithm
     """
-    def __init__(self, state, text, pos):
+    def __init__(self, state, text, pos, groups):
         self._state = state
         self._text = text
         self._pos = pos
-        self._groups = []
-        
-        # mark the start position
-        self._groups.append(None)
+        self._groups = groups or dict()
 
-    def advance(self) -> list[NFAState]:
-        return False
+    def _advance(self, state, threads:list[Thread], filter:set):
+        if state.accept:
+            threads.append(self)
+            return
+
+        for arc in state._arcs:
+            if arc.target in filter:
+                continue
+
+            filter.add(arc.target)
+            if arc.type == NFAArc.EPSILON:
+                th = Thread(arc._target, self._text, self._pos, self.groups)
+                th._advance(arc._target, threads, filter)
+            elif arc.type == NFAArc.CHAR:
+                if arc.value == self._text[self._pos]:
+                    threads.append(Thread(arc._target, self._text, self._pos + 1, self.groups))
+            elif arc.type == NFAArc.CLASS:
+                raise NotImplementedError
+            elif arc.type == NFAArc.LGROUP:
+                th = Thread(arc._target, self._text, self._pos, self.groups)
+                th.groups[arc.value][0] = self._pos
+                th.advance(arc._target, self._text, self._pos, self.groups)
+            elif arc.type == NFAArc.RGROUP:
+                assert(self._groups[arc.value])
+                th = Thread(arc._target, self._text, self._pos, self.groups)
+                th.groups[arc.value][1] = self._pos
+                th.advance(arc._target, threads, filter)
+        return threads
+
+
+    def advance(self, filter) -> list[NFAState]:
+        newThreads = []
+        self._advance(self._state, newThreads, filter)
+        return newThreads
     
     @property
     def groups(self):
@@ -262,13 +286,6 @@ class Thread(object):
     def state(self):
         return self._state
     
-    @property
-    def id(self):
-        return self._tid
-    
-    @id.setter
-    def id(self, tid):
-        self._id = tid
 
 class RegExp(object):
     """ A simple regular expression using NFA for matching
@@ -472,47 +489,50 @@ class RegExp(object):
         self._nfa.dump(self._debug)
         self._compiled = True
 
-    @property
-    def threadId(self):
-        tid = self._tid
-        self._tid = tid
-        return tid
-
-    def addThread(self, text, pos):
+    def addThread(self, text:str, pos:int, filter:set):
         startState = self._nfa._start
-        states = self._nfa.closure(startState)
+        states = NFAState.closure(startState)
 
         for state in states:
+            if state in filter:
+                continue
+
             th = Thread(state, text, pos)
-            threads = th.advance()
+            threads = th.advance(filter)
             for t in threads:
                 if not self._threads.get(t.state):
-                    t.id = self.threadId
                     self._threads[t.state] = t 
 
-    def match(self, text, pos=0) -> tuple[int, int] or None:
+    def match(self, text, pos=0) -> dict:
         if self._compiled == False:
             self.compile()
 
-        self._tid = 0
         self._threads.clear()
-        matchGroup = 0
-
-        newThreads = OrderedDict()
+        
         while pos < len(text):
-            for thread in self._threads:
-                threads = thread.advance()
+            filter = set() # intermediate states
+            newThreads = OrderedDict() # result (state, thread)
+            for _, thread in self._threads.items():
+                threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
-                        matchGroup = thread.groups
-                        break
+                        return th.groups
+                
+                    if not newThreads.get(th.state):
+                        newThreads[th.state] = th
+            
+            # try to add new threads at the start state
+            threads = self.addThread(text, pos, filter)
+            for th in threads:
+                if th.state.accept:
+                    return th.groups
+                if not newThreads.get(th.state):
                     newThreads[th.state] = th
             
             self._threads = newThreads
-            # try to add new threads at the start state
-            self.addThread(text, pos)
             pos += 1
-        return matchGroup
+        return None
+
 
 if __name__ == '__main__':
     re = RegExp('ab|||', debug=True)
