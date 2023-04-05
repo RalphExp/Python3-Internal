@@ -141,7 +141,7 @@ Now come back to the method create_dfas, because the --verbose parameter, line 1
 ```
 
 For the rule ```single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE```
-the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE). The rest of the rules are handled similarily, I saved them in the **automaton.txt**. For a interesting application of NFA see re2.py, a simple regular expression engine.
+the output looks like the following, note that State 0 use three epsilon transition to reach state 1, 2, 3 respectively, state 6(compound_stmt) also use a epsilon transition to goto state 8 (NEWLINE). The rest of the rules are handled similarily. We can inspect the graph using graphviz see **ploy.py**. For a interesting application of NFA see **re2.py**, a simple regular expression engine.
 
 
 **NFA of single_input**
