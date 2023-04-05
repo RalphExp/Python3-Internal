@@ -299,3 +299,4 @@ It does the following step:
   * ```labels``` a list of (x, y) pairs where x is either a token number or a symbol number, and y is either None or a string; the strings are keywords.  The label number is the index in this list; label numbers are used to mark state transitions (arcs) in the DFAs.
   * ```symbol2label``` mapping from label into the index of the ```labels``` list
   * ```tokens``` mapping from token value into the index of the ```labels``` list
+  * ```keywords``` mapping from keyword strings into the index of the ```labels``` list
