@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from itertools import count
 
+import sys
 import copy
 import pdb
 
@@ -95,7 +96,7 @@ class Tokenizer(object):
             self._token = token
             return token
         
-        token = Token(Token.CHAR, s[self._index], self._index)
+        token = Token(Token.CHAR, s[self._index].encode('utf-8'), self._index)
         self._index += 1
         self._token = token
         return self._token
@@ -106,7 +107,7 @@ class Range(object):
 
     def match(self, c):
         for r in self._ranges:
-            if c >= r[0] and c <= r[1]:
+            if r[0] <= c <= r[1]:
                 return True
         return False
 
@@ -241,6 +242,7 @@ class NFA(object):
     def dump(self, debug:bool):
         """Dump a graphical representation of the NFA"""
         todo = [self._start]
+
         for i, state in enumerate(todo):
             # set index to the state, index will be used in hashing
             state.index = i
@@ -296,15 +298,25 @@ class Thread(object):
             if arc.type == NFAArc.EPSILON:
                 th = self.copy(arc.target)
                 th._advance(arc.target, threads, filter)
+
             elif arc.type == NFAArc.CHAR and self._pos < len(self._text):
-                if arc.value == self._text[self._pos]:
+                if arc.value == self._text[self._pos].encode('utf-8'):
                     th = self.copy(arc.target, pos=self._pos+1)
                     if arc.target.accept:
                         th._groups = copy.deepcopy(self._groups)
                         th._groups[0][1] = self._pos+1
                     threads.append(th)
+
             elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
-                raise NotImplementedError
+                # FIXME: how to match unicode characters??
+                char = int.from_bytes(self._text[self._pos].encode('utf-8'), byteorder='little')
+                if arc.value.match(char):
+                    th = self.copy(arc.target, pos=self._pos+1)
+                    if arc.target.accept:
+                        th._groups = copy.deepcopy(self._groups)
+                        th._groups[0][1] = self._pos+1
+                    threads.append(th)
+
             elif arc.type == NFAArc.LGROUP:
                 th = self.copy(arc.target)
                 # only record the first occurrence
@@ -312,6 +324,7 @@ class Thread(object):
                     th._groups = copy.deepcopy(self._groups)
                     th._groups[arc.value] = [self._pos, None]
                 th._advance(arc.target, threads, filter)
+
             elif arc.type == NFAArc.RGROUP:
                 assert(self._groups[arc.value])
                 th = self.copy(arc.target)
@@ -451,7 +464,10 @@ class RegExp(object):
                 a.appendArc(z, token.value, NFAArc.CHAR)
                 self.nextToken()
             elif token.type == Token.DOT:
-                raise NotImplementedError
+                a = self._nfa.newState()
+                z = self._nfa.newState()
+                a.appendArc(z, Range([(0, sys.maxunicode)]), NFAArc.CLASS)
+                self.nextToken()
             else:
                 # currently not implement or token we don't recognize
                 break
@@ -613,5 +629,9 @@ if __name__ == '__main__':
     print(g)
 
     re = RegExp('(ab)+?', debug=True)
+    g = re.search('abab')
+    print(g)
+
+    re = RegExp('a(.*?)b', debug=True)
     g = re.search('abab')
     print(g)
