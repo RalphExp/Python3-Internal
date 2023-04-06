@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # This file shows how to use NFA to construct a regular expression engine.
-# still in experiment && for fun only :)
+# for fun only :)
 
 from __future__ import annotations
 from collections import OrderedDict
@@ -27,8 +27,11 @@ class Token(object):
     LBRACE = 13
     RBRACE = 14
     CHAR = 15
+    CARET = 16
+    DOLLAR = 17
+    DOT = 18
 
-    def __init__(self, type, value, pos=None):
+    def __init__(self, type, value=None, pos=None):
         self.type = type
         self.value = value
         self.pos = pos
@@ -42,19 +45,22 @@ class Tokenizer(object):
         self._pat = pattern
         self._token = None
         self._index = 0
-        self._token_dict = {
-            '|': Token(Token.ALTER, '|'),
-            '(': Token(Token.LPAREN, '('),
-            ')': Token(Token.RPAREN, ')'),
-            '[': Token(Token.LBRACK, '['),
-            ']': Token(Token.RBRACK, ']'),
-            '{': Token(Token.LBRACE, '{'),
-            '}': Token(Token.RBRACE, '}'),
-            '*': Token(Token.STAR, '*'),
-            '+': Token(Token.PLUS, '+'),
-            '?': Token(Token.QUEST, '?'),
+        self._tokenDict = {
+            '|': Token(Token.ALTER),
+            '(': Token(Token.LPAREN),
+            ')': Token(Token.RPAREN),
+            '[': Token(Token.LBRACK),
+            ']': Token(Token.RBRACK),
+            '{': Token(Token.LBRACE),
+            '}': Token(Token.RBRACE),
+            '*': Token(Token.STAR),
+            '+': Token(Token.PLUS),
+            '?': Token(Token.QUEST),
+            '^': Token(Token.CARET),  # currently not supported
+            '$': Token(Token.DOLLAR), # currently not supported
+            '.': Token(Token.DOT)     # currently not supported
         }
-        self._token2_dict = {
+        self._tokenDict2 = {
             '*?': Token(Token.STAR2, '*?'),
             '+?': Token(Token.PLUS2, '+?'),
             '??': Token(Token.QUEST2, '??')
@@ -75,14 +81,14 @@ class Tokenizer(object):
             self._token = Token(Token.END, None, len(s))
             return self._token
 
-        token = self._token2_dict.get(s[self._index:self._index+2], None)
+        token = self._tokenDict2.get(s[self._index:self._index+2], None)
         if token != None:
             token.pos = self._index
             self._index += 2
             self._token = token
             return token
         
-        token = self._token_dict.get(s[self._index], None)
+        token = self._tokenDict.get(s[self._index], None)
         if token != None:
             token.pos = self._index
             self._index += 1
@@ -94,6 +100,15 @@ class Tokenizer(object):
         self._token = token
         return self._token
     
+class Range(object):
+    def __init__(self, ranges:list[tuple]):
+        self._ranges = ranges
+
+    def match(self, c):
+        for r in self._ranges:
+            if c >= r[0] and c <= r[1]:
+                return True
+        return False
 
 class NFAArc(object):
     """ NFAArc represent the arcs connecting to the nextN States,
@@ -109,6 +124,7 @@ class NFAArc(object):
     CLASS = 2
     LGROUP = 3
     RGROUP = 4
+    ANCHOR = 5 # ^ matches the beginning, $ matches the end
 
     def __init__(self, target:NFAState, value:str or int, type_):
         self._type = type_
@@ -154,13 +170,13 @@ class NFAState(object):
     def index(self, val:int):
         self._index = val
 
-    def appendArc(self, target:NFAState, value:str or int, type_):
+    def appendArc(self, target:NFAState, value, type_):
         self._arcs.append(NFAArc(target, value, type_))
 
     def appendState(self, target:NFAState):
         self._arcs += target._arcs
 
-    def prependArc(self, target:NFAState, value:str, type_):
+    def prependArc(self, target:NFAState, value, type_):
         assert(len(self._arcs) == 1)
         self._arcs.insert(0, NFAArc(target, value, type_))
 
@@ -316,7 +332,10 @@ class Thread(object):
         return newThreads
     
     @property
-    def tid(self):
+    def gid(self):
+        """ generation id, the smaller the id is, the earlier the 
+        thread has been created
+        """
         return self._id
 
     @property
@@ -431,6 +450,8 @@ class RegExp(object):
                 z = self._nfa.newState()
                 a.appendArc(z, token.value, NFAArc.CHAR)
                 self.nextToken()
+            elif token.type == Token.DOT:
+                raise NotImplementedError
             else:
                 # currently not implement or token we don't recognize
                 break
@@ -514,44 +535,50 @@ class RegExp(object):
         self._threads.clear()
         gen = count()
         matchThread = None
+        matched = False
 
         def compareThread(th1:Thread, th2:Thread):
             """ we want to choose the longest match,
-            which can be compared by the tid
+            which can be compared by the gid
             """
             if th1 is None:
                 return th2
-            if th1.tid < th2.tid:
+            if th1.gid < th2.gid:
                 return th1
-            # when th1.tid == th2.tid alway choose th2,
-            # because th2 is a longer match. if th1.tid > th2.tid,
+            # when th1.gid == th2.gid alway choose th2,
+            # because th2 is a longer match. if th1.gid > th2.gid,
             # it means th2 is a earlier matching.
             return th2
 
         while pos <= len(text):
             filter = set() # intermediate states
             newThreads = OrderedDict() # result (state, thread)
+            matched = False
             for _, thread in self._threads.items():
                 threads = thread.advance(filter)
                 for th in threads:
                     if th.state.accept:
                         matchThread = compareThread(matchThread, th)
-                        # all the thread in threads have the same tid
+                        # all the thread in threads have the same gid
                         # we don't need to advance any more
+                        matched = True
                         break
                     
                     if not newThreads.get(th.state):
                         newThreads[th.state] = th
+                if matched:
+                    # from here on, the rest threads are not considered a
+                    # candidate, e.g. in the regular expression A|B, when A
+                    # is a correct matching, B is not considered any more
+                    break
             
             # try to add new threads at the start state
-            # TODO: if we found a thread has already match the text
-            # we should skip addThread??
             if not matchThread:
                 threads = self.addThread(text, pos, filter, gen)
                 for th in threads:
                     if th.state.accept:
                         matchThread = compareThread(matchThread, th)
-                        # all the thread in threads have the same tid
+                        # all the thread in threads have the same gid
                         # we don't need to advance any more
                         break
                     if not newThreads.get(th.state):
@@ -564,16 +591,6 @@ class RegExp(object):
 
 
 if __name__ == '__main__':
-    re = RegExp('ab|||', debug=True)
-    re.compile()
-    re = RegExp('ab|cd|ef', debug=True)
-    re.compile()
-    re = RegExp('(a)*', debug=True)
-    re.compile()
-    re = RegExp('(ab)*', debug=True)
-    re.compile()
-    re = RegExp('(ab|cd)*', debug=True)
-    re.compile()
     re = RegExp('(ab|c+?d)', debug=True)
     re.compile()
     g = re.search('ccccccccd')
@@ -588,5 +605,13 @@ if __name__ == '__main__':
     print(g)
 
     re = RegExp('(ab)*?', debug=True)
+    g = re.search('ab')
+    print(g)
+
+    re = RegExp('(ab)+', debug=True)
+    g = re.search('ab')
+    print(g)
+
+    re = RegExp('(ab)+?', debug=True)
     g = re.search('ab')
     print(g)
