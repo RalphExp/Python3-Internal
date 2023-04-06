@@ -600,6 +600,9 @@ class RegExp(object):
                     if not newThreads.get(th.state):
                         newThreads[th.state] = th
             
+            if len(newThreads) == 0 and matchThread:
+                break
+
             self._threads = newThreads
             pos += 1
 
@@ -630,6 +633,10 @@ if __name__ == '__main__':
 
     re = RegExp('(ab)+?', debug=True)
     g = re.search('abab')
+    print(g)
+
+    re = RegExp('a(.*)bc', debug=True)
+    g = re.search('abababc')
     print(g)
 
     re = RegExp('a(.*?)b', debug=True)
