@@ -3,7 +3,7 @@
 ## The tokenizer and parser module
 In pgen we explored how to create the grammar file graminit.h, gramminit.c, this chapter will explore how the tokenizer and parser work together to create the AST. Let's start from the function PyParser_ParseFileObject (in Parser/parsetok.c)
 
-```c++
+```c++ parsetok.c
 164 node *
 165 PyParser_ParseFileObject(FILE *fp, PyObject *filename,
 166                          const char *enc, grammar *g, int start,
