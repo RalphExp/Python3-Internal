@@ -609,9 +609,9 @@ if __name__ == '__main__':
     print(g)
 
     re = RegExp('(ab)+', debug=True)
-    g = re.search('ab')
+    g = re.search('abab')
     print(g)
 
     re = RegExp('(ab)+?', debug=True)
-    g = re.search('ab')
+    g = re.search('abab')
     print(g)
