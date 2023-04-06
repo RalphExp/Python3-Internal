@@ -7,38 +7,42 @@ from __future__ import annotations
 from collections import OrderedDict
 from itertools import count
 
-import sys
 import copy
 import pdb
 
 class Token(object):
     END = 0
-    ALTER = 1
-    LPAREN = 2
-    RPAREN = 3
-    STAR = 4
-    STAR2 = 5
-    PLUS = 6
-    PLUS2 = 7
-    QUEST = 8
-    QUEST2 = 9
-    LBRACK = 10
-    RBRACK = 11
-    BACKSLASH = 12
-    LBRACE = 13
-    RBRACE = 14
-    CHAR = 15
-    CARET = 16
-    DOLLAR = 17
-    DOT = 18
+    CHAR = 1
+    DOT = 2
+    ALTER = 3
+    LPAREN = 4
+    RPAREN = 5
+    STAR = 6
+    STAR2 = 7
+    PLUS = 8
+    PLUS2 = 9
+    QUEST = 10
+    QUEST2 = 11
+    LBRACK = 12
+    RBRACK = 13
+    BACKSLASH = 14
+    LBRACE = 15
+    RBRACE = 16
+    CARET = 17
+    DOLLAR = 18
+    
+    tokenName = ['END', 'CHAR', 'DOT', 'ALTER', 'LPAREN', 'RPAREN', 
+                 'STAR', 'STAR2', 'PLUS', 'PLUS2', 'QUEST', 'QUEST2', 
+                 'LBRACK', 'RBRACK', 'BACKSLASH', 'LBRACE', 'RBRACE', 
+                 'CARET', 'DOLLAR']
 
     def __init__(self, type, value=None, pos=None):
         self.type = type
         self.value = value
         self.pos = pos
 
-    def __repr__(self) -> str:
-        return f'token: type = {self.type}, val = {self.value}, pos = {self.pos}'
+    def __repr__(self) -> str: 
+        return f'token: type = {self.type}, val = {Token.tokenName[self.type]}, pos = {self.pos}'
 
 
 class Tokenizer(object):
@@ -59,7 +63,7 @@ class Tokenizer(object):
             '?': Token(Token.QUEST),
             '^': Token(Token.CARET),  # currently not supported
             '$': Token(Token.DOLLAR), # currently not supported
-            '.': Token(Token.DOT)     # currently not supported
+            '.': Token(Token.DOT)
         }
         self._tokenDict2 = {
             '*?': Token(Token.STAR2, '*?'),
@@ -454,10 +458,14 @@ class RegExp(object):
                     raise Exception('Unmatch parenthesis')
                 
                 self.nextToken() # consume ')'
-                a = self._nfa.newState()
-                z = self._nfa.newState()
-                a.appendArc(a1, group, NFAArc.LGROUP)
-                z1.appendArc(z, group, NFAArc.RGROUP)
+                if a1 is not None:
+                    a = self._nfa.newState()
+                    z = self._nfa.newState()
+                    a.appendArc(a1, group, NFAArc.LGROUP)
+                    z1.appendArc(z, group, NFAArc.RGROUP)
+                
+                # a1 can be None e.g. 'a()b', if this is the case,
+                # don't do anything, because () can never capture anything
             elif token.type == Token.CHAR:
                 a = self._nfa.newState()
                 z = self._nfa.newState()
@@ -466,10 +474,13 @@ class RegExp(object):
             elif token.type == Token.DOT:
                 a = self._nfa.newState()
                 z = self._nfa.newState()
-                a.appendArc(z, Range([(0, sys.maxunicode)]), NFAArc.CLASS)
+                a.appendArc(z, Range([(0, 0x7FFFFFFF)]), NFAArc.CLASS)
                 self.nextToken()
             else:
-                # currently not implement or token we don't recognize
+                # if we don't capture anything and come across the token
+                # which can not be processed, raise an exception.
+                if token.type != Token.RPAREN and aa is None:
+                    raise Exception(f'unexpected token: {token}')
                 break
 
             a, z = self.modify(a, z)
@@ -553,6 +564,7 @@ class RegExp(object):
         matchThread = None
         matched = False
 
+        # FIXME: do we really need compare thread ?
         def compareThread(th1:Thread, th2:Thread):
             """ we want to choose the longest match,
             which can be compared by the gid
@@ -640,5 +652,9 @@ if __name__ == '__main__':
     print(g)
 
     re = RegExp('a(.*?)b', debug=True)
+    g = re.search('abab')
+    print(g)
+
+    re = RegExp('a(.*)(b)', debug=True)
     g = re.search('abab')
     print(g)
