@@ -18,10 +18,10 @@ class Token(object):
     LPAREN = 4
     RPAREN = 5
     STAR = 6
-    STAR2 = 7
-    PLUS = 8
-    PLUS2 = 9
-    QUEST = 10
+    PLUS = 7
+    QUEST = 8
+    STAR2 = 9
+    PLUS2 = 10
     QUEST2 = 11
     LBRACK = 12
     RBRACK = 13
@@ -32,7 +32,7 @@ class Token(object):
     DOLLAR = 18
     
     tokenName = ['END', 'CHAR', 'DOT', 'ALTER', 'LPAREN', 'RPAREN', 
-                 'STAR', 'STAR2', 'PLUS', 'PLUS2', 'QUEST', 'QUEST2', 
+                 'STAR', 'PLUS', 'QUEST', 'STAR2', 'PLUS2', 'QUEST2',
                  'LBRACK', 'RBRACK', 'BACKSLASH', 'LBRACE', 'RBRACE', 
                  'CARET', 'DOLLAR']
 
@@ -63,12 +63,8 @@ class Tokenizer(object):
             '?': Token(Token.QUEST),
             '^': Token(Token.CARET),  # currently not supported
             '$': Token(Token.DOLLAR), # currently not supported
-            '.': Token(Token.DOT)
-        }
-        self._tokenDict2 = {
-            '*?': Token(Token.STAR2, '*?'),
-            '+?': Token(Token.PLUS2, '+?'),
-            '??': Token(Token.QUEST2, '??')
+            '.': Token(Token.DOT),
+            '\\': Token(Token.BACKSLASH)
         }
         self.next()
 
@@ -82,38 +78,63 @@ class Tokenizer(object):
     
     def next(self):
         s = self._pat
-        if self._index >= len(s):
+        if self._index == len(s):
             self._token = Token(Token.END, None, len(s))
             return self._token
 
-        token = self._tokenDict2.get(s[self._index:self._index+2], None)
-        if token != None:
-            token.pos = self._index
-            self._index += 2
-            self._token = token
-            return token
-        
         token = self._tokenDict.get(s[self._index], None)
-        if token != None:
+        if token is None:
+            token = Token(Token.CHAR, s[self._index].encode('utf-8'))
             token.pos = self._index
             self._index += 1
-            self._token = token
-            return token
-        
-        token = Token(Token.CHAR, s[self._index].encode('utf-8'), self._index)
-        self._index += 1
+
+        elif Token.STAR <= token.type <= Token.QUEST:
+            if self._index + 1 < len(s):
+                next = self._tokenDict.get(s[self.index + 1], None)
+                if next and next.type == Token.QUEST:
+                    token.type += 3
+                    token.pos = self._index
+                    self._index += 2
+                else:
+                    token.pos = self._index
+                    self._index += 1
+            else:
+                token.pos = self._index
+                self._index += 1
+
+        elif token.type == Token.BACKSLASH:
+            if self._index + 1 == len(s):
+                raise Exception(f'Invalid escape at pos {self.index-1}')
+            if s[self._index + 1] in ('d', 'D', 'w', 'W', 's', 'S'):
+                token = Token(Token.BACKSLASH, s[self._index+1], self._index)
+                self._index += 2
+            else:
+                token = Token(Token.CHAR, s[self._index+1].encode('utf-8'), self._index)
+                self._index += 1
+        else:
+            token.pos = self._index
+            self._index += 1
+
         self._token = token
-        return self._token
-    
+        return token
+
 class Range(object):
-    def __init__(self, ranges:list[tuple]):
+    def __init__(self, ranges:list[tuple], negate=False):
         self._ranges = ranges
+        self._negate = negate
 
     def match(self, c):
+        if not self._negate:
+            for r in self._ranges:
+                if r[0] <= c <= r[1]:
+                    return True
+            return False
+        
+        # negation
         for r in self._ranges:
             if r[0] <= c <= r[1]:
-                return True
-        return False
+                return False
+        return True
 
 class NFAArc(object):
     """ NFAArc represent the arcs connecting to the nextN States,
@@ -127,9 +148,10 @@ class NFAArc(object):
     EPSILON = 0
     CHAR = 1
     CLASS = 2
-    LGROUP = 3
-    RGROUP = 4
-    ANCHOR = 5 # ^ matches the beginning, $ matches the end
+    CLASS2 = 3 # compliment of the class
+    LGROUP = 4
+    RGROUP = 5
+    ANCHOR = 6 # ^ matches the beginning, $ matches the end
 
     def __init__(self, target:NFAState, value:str or int, type_):
         self._type = type_
@@ -476,6 +498,22 @@ class RegExp(object):
                 z = self._nfa.newState()
                 a.appendArc(z, Range([(0, 0x7FFFFFFF)]), NFAArc.CLASS)
                 self.nextToken()
+            elif token.type == Token.BACKSLASH:
+                a = self._nfa.newState()
+                z = self._nfa.newState()
+                if token.value == 'd':
+                    a.appendArc(z, Range([(48, 57)]), NFAArc.CLASS)
+                elif token.value == 'D':
+                    a.appendArc(z, Range([(48, 57)], True), NFAArc.CLASS)
+                elif token.value == 'w':
+                    a.appendArc(z, Range([(65, 90),(97, 122)]), NFAArc.CLASS)
+                elif token.value == 'W':
+                    a.appendArc(z, Range([(65, 90),(97, 122)], True), NFAArc.CLASS)
+                elif token.value == 's':
+                    a.appendArc(z, Range([(8,10),(13,13),(32,32)]), NFAArc.CLASS)
+                elif token.value == 'S':
+                    a.appendArc(z, Range([(8,10),(13,13),(32,32)], True), NFAArc.CLASS)
+                self.nextToken()
             else:
                 # if we don't capture anything and come across the token
                 # which can not be processed, raise an exception.
@@ -621,6 +659,9 @@ class RegExp(object):
         return matchThread.groups if matchThread is not None else None 
 
 
+######################################
+# Test Cases:
+######################################
 if __name__ == '__main__':
     re = RegExp('(ab|c+?d)', debug=True)
     re.compile()
@@ -658,3 +699,12 @@ if __name__ == '__main__':
     re = RegExp('a(.*)(b)', debug=True)
     g = re.search('abab')
     print(g)
+
+    re = RegExp('(\\|)', debug=True)
+    g = re.search('a|b')
+    print(g)
+
+    re = RegExp('(\\d)', debug=True)
+    g = re.search('a4b')
+    print(g)
+
