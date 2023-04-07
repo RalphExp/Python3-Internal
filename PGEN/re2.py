@@ -110,7 +110,7 @@ class Tokenizer(object):
                 self._index += 2
             else:
                 token = Token(Token.CHAR, s[self._index+1].encode('utf-8'), self._index)
-                self._index += 1
+                self._index += 2
         else:
             token.pos = self._index
             self._index += 1
@@ -122,6 +122,9 @@ class Range(object):
     def __init__(self, ranges:list[tuple], negate=False):
         self._ranges = ranges
         self._negate = negate
+
+    def __repr__(self) -> str:
+        return str(self._ranges)
 
     def match(self, c):
         if not self._negate:
@@ -148,10 +151,9 @@ class NFAArc(object):
     EPSILON = 0
     CHAR = 1
     CLASS = 2
-    CLASS2 = 3 # compliment of the class
-    LGROUP = 4
-    RGROUP = 5
-    ANCHOR = 6 # ^ matches the beginning, $ matches the end
+    LGROUP = 3
+    RGROUP = 4
+    ANCHOR = 5 # ^ matches the beginning, $ matches the end
 
     def __init__(self, target:NFAState, value:str or int, type_):
         self._type = type_
@@ -294,8 +296,13 @@ class NFA(object):
                         print("    ) -> %d" % j)
                     elif arc.type == NFAArc.CHAR:
                         print("    %s -> %d" % (arc.value, j))
-                    
+                    elif arc.type == NFAArc.CLASS:
+                        if not arc.value._negate:
+                            print("    %s -> %d" % (arc.value, j))
+                        else:
+                            print("    ! %s -> %d" % (arc.value, j))
         if debug: print("")
+
         self._nodes = todo
 
 
@@ -333,8 +340,7 @@ class Thread(object):
                         th._groups[0][1] = self._pos+1
                     threads.append(th)
 
-            elif arc.type == NFAArc.CLASS and self._pos < len(self._text):
-                # FIXME: how to match unicode characters??
+            elif arc.type <= NFAArc.CLASS and self._pos < len(self._text):
                 char = int.from_bytes(self._text[self._pos].encode('utf-8'), byteorder='little')
                 if arc.value.match(char):
                     th = self.copy(arc.target, pos=self._pos+1)
@@ -419,6 +425,7 @@ class RegExp(object):
  
         # invariant property: len(z._arc) == 0
         # now handle the STAR/PLUS/QUESTION
+
         token = self.getToken()
         if token.type == Token.STAR:
             self.nextToken()
@@ -513,6 +520,9 @@ class RegExp(object):
                     a.appendArc(z, Range([(8,10),(13,13),(32,32)]), NFAArc.CLASS)
                 elif token.value == 'S':
                     a.appendArc(z, Range([(8,10),(13,13),(32,32)], True), NFAArc.CLASS)
+                else:
+                    # never reach here
+                    pass
                 self.nextToken()
             else:
                 # if we don't capture anything and come across the token
@@ -700,11 +710,11 @@ if __name__ == '__main__':
     g = re.search('abab')
     print(g)
 
-    re = RegExp('(\\|)', debug=True)
+    re = RegExp('(a\|b)', debug=True)
     g = re.search('a|b')
     print(g)
 
-    re = RegExp('(\\d)', debug=True)
-    g = re.search('a4b')
+    re = RegExp('(\\d)+', debug=True)
+    g = re.search('a01234567b')
     print(g)
 
