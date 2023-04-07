@@ -710,7 +710,7 @@ if __name__ == '__main__':
     g = re.search('abab')
     print(g)
 
-    re = RegExp('(a\|b)', debug=True)
+    re = RegExp('(a\\|b)', debug=True)
     g = re.search('a|b')
     print(g)
 
