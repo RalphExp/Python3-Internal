@@ -714,7 +714,7 @@ if __name__ == '__main__':
     g = re.search('a|b')
     print(g)
 
-    re = RegExp('(\\d)+', debug=True)
-    g = re.search('a01234567b')
+    re = RegExp('(\\d+)-(\\d+)-(\\d+)', debug=True)
+    g = re.search('1234-567-890')
     print(g)
 
