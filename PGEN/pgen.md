@@ -381,8 +381,9 @@ static state states_0[3] = {
 ```
 **graminit.c**
 ```c++
-// arcs_$labelIndex_$stateIndex[$stateNums]
+// arcs_${dfaIndex}_${stateIndex}[$stateNums]
 static const arc arcs_0_0[3] = {
+    // {$labelIndex, ${stateIndex}
     {2, 1}, // label[2] = {4, 0},   i.e. state0 --> state1 by (NEWLINE: 4) 
     {3, 2}, // label[3] = {295, 0}, i.e. state0 --> state2 by (compound_stmt: 295)
     {4, 1}, // label[4] = {270, 0}, i.e. state0 --> state1 by (simple_stmt: 270)
