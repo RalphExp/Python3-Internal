@@ -108,6 +108,8 @@ returns the AST if the AST has been construct correctly.
 464     }
 465     return n;
 ```
-The parsing process can be viewed in this image. ![](images/Parser-Tokenizer.png)
+The parsing process can be viewed in this image. 
+
+![](images/Parser-Tokenizer.png)
 
 
