@@ -113,3 +113,75 @@ The parsing process can be viewed in this image.
 ![](images/Parser-Tokenizer.png)
 
 
+## How does accelerator work?
+The function PyParser_AddToken handles the state transition when parsing the different tokens. When the parser is created, it installs a accelerator module (accel.c)
+
+before installing the accelerator, parser has to check the list of the arc structure to decide where the next state to go, it would waste a lot of time. Because now python has already got the DFA, every single token will **only** lead to a new state, it would be much faster if it can use a indexing strategy, something like ```next_state = current_state.accel[label index]```.
+
+``` c++
+typedef struct {
+    short       a_lbl;          /* Label of this arc */
+    short       a_arrow;        /* State where this arc goes to */
+} arc;
+```
+
+This is what accel.c does, some details are omitted.
+```c++
+static void fixstate(grammar *g, state *s)
+{
+    const arc *a;
+    int k;
+    int *accel;
+    int nl = g->g_ll.ll_nlabels;
+    s->s_accept = 0;
+
+    /* 1. create an accel array for the acceleration */
+    accel = (int *) PyObject_MALLOC(nl * sizeof(int));
+
+    /* 2. default case: there are no acceleration */
+    for (k = 0; k < nl; k++)
+        accel[k] = -1;
+
+    /* 3. for each arc, get the label and the next state. */
+    a = s->s_arc; /* a point to the arcs array[0] */
+    for (k = s->s_narcs; --k >= 0; a++) {
+        int lbl = a->a_lbl; /* label index */
+        const label *l = &g->g_ll.ll_label[lbl];
+        int type = l->lb_type; /* Non-terminal symbol or token num */
+        if (a->a_arrow >= (1 << 7)) { /* more than 127 states(in the dfa that 
+                                      having s as its state), could this happen? */
+            printf("XXX too many states!\n");
+            continue;
+        }
+        if (ISNONTERMINAL(type)) {
+            const dfa *d1 = PyGrammar_FindDFA(g, type); /* g_dfa[type - NT_OFFSET];*/
+            int ibit;
+            if (type - NT_OFFSET >= (1 << 7)) {
+                printf("XXX too high nonterminal number!\n");
+                continue;
+            }
+            for (ibit = 0; ibit < g->g_ll.ll_nlabels; ibit++) {
+                if (testbit(d1->d_first, ibit)) {
+                    if (accel[ibit] != -1)
+                        printf("XXX ambiguity!\n");
+
+                    /* 4. if the label is a Non-terminal symbol, using its first set to
+                     * get the next state. */
+                    accel[ibit] = a->a_arrow | (1 << 7) |
+                        ((type - NT_OFFSET) << 8);  /* next_state | (1<<7) |  Non-terminal */
+                }
+            }
+        }
+        else if (lbl == EMPTY)
+            s->s_accept = 1;
+        /* 5: if the label is a token. set the next state by the the label index directly. */
+        else if (lbl >= 0 && lbl < nl)
+            accel[lbl] = a->a_arrow;
+    }
+
+    // ...
+}
+```
+
+
+
