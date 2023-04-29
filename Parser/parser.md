@@ -1,7 +1,7 @@
 # Python3 Parser
 
 ## The tokenizer and parser module
-In pgen we explored how to create the grammar file graminit.h, gramminit.c, this chapter will explore how the tokenizer and parser work together to create the AST. Let's start from the function PyParser_ParseFileObject (in Parser/parsetok.c)
+In pgen we explored how to create the grammar file graminit.h, gramminit.c, this chapter will explore how the tokenizer and parser work together to create the CST. Let's start from the function PyParser_ParseFileObject (in Parser/parsetok.c)
 
 ```c++ parsetok.c
 164 node *
@@ -80,7 +80,7 @@ parsetok then get the token by calling PyTokenizer_Get
 ```
 
 if the token is valid, then PyParser_AddToken will add the token into the parser
-for constructing the AST
+for constructing the CST
 ```c++
 337         if ((err_ret->error =
 338              PyParser_AddToken(ps, (int)type, str,
@@ -98,7 +98,7 @@ for constructing the AST
 350     }
 ```
 
-returns the AST if the AST has been construct correctly.
+returns the CST if the CST has been construct correctly.
 ```c++
 459 done:
 460     PyTokenizer_Free(tok);
@@ -183,5 +183,6 @@ static void fixstate(grammar *g, state *s)
 }
 ```
 
-
+## Inspecting the CST
+When the parsetok returns, the CST is constructed. Before jumping to the AST, let inspect the CST by using the parser library. The example is shown in **syntax_tree.py** (borrowed from CPython Internals).
 
